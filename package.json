@@ -7,7 +7,7 @@
         "build": "npx tsc",
         "dev": "tsx --inspect --watch --env-file=.env.local src/server.ts",
         "staging": "node dist/src/server.js",
-        "prod": "node --env-file=.env.prod dist/src/server.js",
+        "prod": "node dist/src/server.js",
         "test": "jest"
     },
     "keywords": [],
