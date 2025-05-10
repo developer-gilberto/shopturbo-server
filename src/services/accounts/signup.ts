@@ -14,6 +14,9 @@ export function signUpService(req: Request<{}, {}, IReqBody>, res: Response) {
     }
 
     // criar docker-compose.yaml para o postgres e redis
+
+    // commitar
+
     // prisma -D
     // const email = await authUser.findEmail();
 
