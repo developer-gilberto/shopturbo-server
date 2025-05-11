@@ -17,5 +17,5 @@ server.get('/', (_req, res: Response) => {
 });
 
 server.listen(process.env.PORT, () => {
-    console.info('-> Server is running :) ');
+    console.info('\x1b[1m\x1b[32m-> Server is running :) \x1b[0m');
 });

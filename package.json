@@ -5,7 +5,7 @@
     "main": "server.js",
     "scripts": {
         "build": "npx tsc",
-        "dev": "tsx --inspect --watch --env-file=.env.local src/server.ts",
+        "dev": "tsx --inspect --watch --env-file=.env src/server.ts",
         "staging": "node dist/src/server.js",
         "prod": "node dist/src/server.js",
         "test": "jest"
@@ -16,9 +16,11 @@
     "packageManager": "pnpm@10.10.0",
     "dependencies": {
         "@prisma/client": "6.7.0",
+        "bcryptjs": "^3.0.2",
         "cors": "^2.8.5",
         "express": "^5.1.0",
         "helmet": "^8.1.0",
+        "jsonwebtoken": "^9.0.2",
         "zod": "^3.24.4"
     },
     "devDependencies": {

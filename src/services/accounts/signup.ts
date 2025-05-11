@@ -1,9 +1,13 @@
 import { Request, Response } from 'express';
 import { IReqBody } from '../../interfaces/user';
-import { signupSchema } from '../../schemas/signup';
 import { User } from '../../models/user';
+import { signupSchema } from '../../schemas/signup';
+import { UsersRepository } from '../../repositories/usersRepository';
 
-export function signUpService(req: Request<{}, {}, IReqBody>, res: Response) {
+export async function signUpService(
+    req: Request<{}, {}, IReqBody>,
+    res: Response
+) {
     const safeData = signupSchema().safeParse(new User(req.body));
 
     if (!safeData.success) {
@@ -13,16 +17,22 @@ export function signUpService(req: Request<{}, {}, IReqBody>, res: Response) {
         });
     }
 
-    // criar docker-compose.yaml para o postgres e redis
+    const usersRepository = new UsersRepository(safeData.data);
 
-    // commitar
+    const queryResult = await usersRepository.getEmail();
 
-    // prisma -D
-    // const email = await authUser.findEmail();
+    if (queryResult?.email) {
+        return res.status(409).json({
+            error: true,
+            message: 'This email is already in use. Try a different email.',
+        });
+    }
+
+    const user = await usersRepository.create();
 
     return res.status(201).json({
         error: false,
         message: 'Account created successfully!',
-        data: [],
+        data: [user],
     });
 }
