@@ -9,7 +9,7 @@ export function signupSchema() {
 
         email: z
             .string()
-            .email('E-mail inválido!')
+            .email('E-mail com formato inválido!')
             .min(2, 'O email deve ter pelo menos 8 caracteres!')
             .max(30, 'O email deve ter no máximo 30 caracteres!'),
 
@@ -21,9 +21,9 @@ export function signupSchema() {
         termsOfUse: z
             .string()
             .min(
-                1,
+                2,
                 'É necessário aceitar os termos de uso para criar uma conta!'
             )
-            .max(5, " 'termsOfUse' deve ter no máximo 5 caracteres."),
+            .max(2, ' "termsOfUse" deve ter no máximo 2 caracteres. "on" '),
     });
 }

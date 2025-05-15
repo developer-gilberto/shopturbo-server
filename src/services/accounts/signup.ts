@@ -3,6 +3,7 @@ import { IReqBody } from '../../interfaces/user';
 import { User } from '../../models/user';
 import { signupSchema } from '../../schemas/signup';
 import { UsersRepository } from '../../repositories/usersRepository';
+import { generateJWT } from '../../helpers/jwtHelper';
 
 export async function signUpService(
     req: Request<{}, {}, IReqBody>,
@@ -19,9 +20,9 @@ export async function signUpService(
 
     const usersRepository = new UsersRepository(safeData.data);
 
-    const queryResult = await usersRepository.getEmail();
+    const storedUser = await usersRepository.getUserByEmail();
 
-    if (queryResult?.email) {
+    if (storedUser) {
         return res.status(409).json({
             error: true,
             message: 'This email is already in use. Try a different email.',
@@ -30,9 +31,11 @@ export async function signUpService(
 
     const user = await usersRepository.create();
 
+    const authToken = generateJWT(user);
+
     return res.status(201).json({
         error: false,
         message: 'Account created successfully!',
-        data: [user],
+        data: [{ authToken }],
     });
 }

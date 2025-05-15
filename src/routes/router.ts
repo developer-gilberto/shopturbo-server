@@ -9,7 +9,7 @@ router.post('/accounts/signup', (req: Request, res: Response) => {
 });
 
 router.post('/accounts/signin', (req: Request, res: Response) => {
-    // signInService(req, res);
+    signInService(req, res);
 });
 
 export { router };

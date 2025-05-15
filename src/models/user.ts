@@ -4,7 +4,7 @@ export class User {
     name: string;
     email: string;
     password: string;
-    termsOfUse: string | boolean;
+    termsOfUse: string;
 
     constructor(reqBody: IReqBody) {
         this.name = reqBody.name;

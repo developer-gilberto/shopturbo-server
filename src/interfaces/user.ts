@@ -5,5 +5,10 @@ export interface IUser {
 }
 
 export interface IReqBody extends IUser {
-    termsOfUse: string | boolean;
+    termsOfUse: string;
+}
+
+export interface IJwtPayload extends Partial<IUser> {
+    id?: string;
+    email: string;
 }
