@@ -1,4 +1,4 @@
-import { IJwtPayload } from '../interfaces/user.js';
+import { IJwtPayload } from '../interfaces/usersInterfaces.js';
 import jwt from 'jsonwebtoken';
 
 export function generateJWT(user: Omit<IJwtPayload, 'password'>) {

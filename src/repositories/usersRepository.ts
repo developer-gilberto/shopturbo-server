@@ -1,20 +1,11 @@
-import { prismaClient } from '../db/connection';
+import { prismaClient } from '../db/dbConnection';
 import { hashPassword } from '../helpers/hashHelper';
-import { IUser } from '../interfaces/user';
+import { IUser } from '../interfaces/usersInterfaces';
+import { User } from '../models/usersModel';
 
-// export class UsersRepository extends User {
-//     constructor(user: IReqBody) {
-//         super(user);
-//     }
-export class UsersRepository {
-    name: string;
-    email: string;
-    password: string;
-
+export class UsersRepository extends User {
     constructor(user: IUser) {
-        this.name = user.name;
-        this.email = user.email;
-        this.password = user.password;
+        super(user);
     }
 
     async getUserByEmail() {

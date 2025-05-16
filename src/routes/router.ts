@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
-import { signUpService } from '../services/accounts/signup';
-import { signInService } from '../services/accounts/signin';
+import { signUpService } from '../services/accounts/signupService';
+import { signInService } from '../services/accounts/signinService';
 
 const router = Router();
 

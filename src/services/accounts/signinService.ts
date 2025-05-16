@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { IReqBody } from '../../interfaces/user';
-import { signinSchema } from '../../schemas/signin';
-import { User } from '../../models/user';
+import { IReqBody } from '../../interfaces/usersInterfaces';
+import { signinSchema } from '../../schemas/signinSchema';
+import { User } from '../../models/usersModel';
 import { UsersRepository } from '../../repositories/usersRepository';
 import { comparePassword } from '../../helpers/hashHelper';
 import { generateJWT } from '../../helpers/jwtHelper';
