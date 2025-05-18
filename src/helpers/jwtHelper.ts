@@ -13,18 +13,3 @@ export function generateJWT(user: Omit<IJwtPayload, 'password'>) {
         // { expiresIn: 30 } // 30s
     );
 }
-
-export function verifyJWT(token: string): IJwtPayload | null {
-    try {
-        return jwt.verify(
-            token,
-            process.env.JWT_SECRET as string
-        ) as IJwtPayload;
-    } catch (err) {
-        console.error(
-            '\x1b[1m\x1b[31m[ ERROR ] an error occurred while verifying JWT: \x1b[0m\n',
-            err
-        );
-        return null;
-    }
-}

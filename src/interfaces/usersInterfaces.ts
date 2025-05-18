@@ -12,3 +12,8 @@ export interface IJwtPayload extends Partial<IUser> {
     id?: string;
     email: string;
 }
+
+import { Request } from 'express';
+export type ExtendedRequest = Request & {
+    loggedUser?: IJwtPayload;
+};
