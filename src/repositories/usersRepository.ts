@@ -9,33 +9,62 @@ export class UsersRepository extends User {
     }
 
     async getUserByEmail() {
-        return await prismaClient.user.findUnique({
-            where: {
-                email: this.email,
-            },
-        });
+        try {
+            const user = await prismaClient.user.findUnique({
+                where: {
+                    email: this.email,
+                },
+            });
+            return user;
+        } catch (err) {
+            console.error(
+                `\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to search for a user in the database: \x1b[0m\n`,
+                err
+            );
+            return false;
+        }
     }
 
     async getPassword() {
-        return await prismaClient.user.findUnique({
-            where: {
-                email: this.email,
-            },
-            select: {
-                password: true,
-            },
-        });
+        try {
+            const password = await prismaClient.user.findUnique({
+                where: {
+                    email: this.email,
+                },
+                select: {
+                    password: true,
+                },
+            });
+            return password;
+        } catch (err) {
+            console.error(
+                `\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to search for a hash in the database: \x1b[0m\n`,
+                err
+            );
+            return false;
+        }
     }
 
     async create() {
-        const result = await prismaClient.user.create({
-            data: {
-                name: this.name,
-                email: this.email,
-                password: await hashPassword(this.password),
-            },
-        });
-        const { password, ...user } = result;
-        return user;
+        try {
+            const hash = await hashPassword(this.password);
+            if (!hash) return false;
+
+            const result = await prismaClient.user.create({
+                data: {
+                    name: this.name,
+                    email: this.email,
+                    password: hash,
+                },
+            });
+            const { password, ...user } = result;
+            return user;
+        } catch (err) {
+            console.error(
+                `\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to save user to the database: \x1b[0m\n`,
+                err
+            );
+            return false;
+        }
     }
 }

@@ -12,9 +12,8 @@ export function verifyToken(
     if (!token) {
         res.status(401).json({
             error: true,
-            message: 'Token not provided. Access denied :(',
+            message: 'Access denied :(',
         });
-
         return;
     }
 
@@ -47,7 +46,10 @@ export function verifyToken(
             }
         );
     } catch (err) {
-        console.error(err);
+        console.error(
+            `\x1b[1m\x1b[31m[ ERROR ] Error verifying authentication token: \x1b[0m\n`,
+            err
+        );
         res.status(500).json({
             error: true,
             message: 'Error verifying authentication token.',

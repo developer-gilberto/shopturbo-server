@@ -1,6 +1,9 @@
+import { PrismaClientInitializationError } from '@prisma/client/runtime/library';
 import { PrismaClient } from '../generated/prisma/client';
 
-export const prismaClient = new PrismaClient();
+export const prismaClient = new PrismaClient({
+    log: ['info'],
+});
 
 async function connection() {
     try {
