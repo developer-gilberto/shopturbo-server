@@ -4,7 +4,7 @@
     "description": "",
     "main": "server.js",
     "scripts": {
-        "prisma:generate": "prisma generate",
+        "prisma:generate": "npx prisma generate",
         "build": "pnpm prisma:generate && tsc",
         "dev": "tsx --inspect --watch --env-file=.env src/server.ts",
         "staging": "node dist/src/server.js",
@@ -16,7 +16,7 @@
     "license": "ISC",
     "packageManager": "pnpm@10.10.0",
     "dependencies": {
-        "@prisma/client": "6.7.0",
+        "@prisma/client": "^6.8.2",
         "bcryptjs": "^3.0.2",
         "cors": "^2.8.5",
         "express": "^5.1.0",
