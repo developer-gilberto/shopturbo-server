@@ -4,7 +4,8 @@
     "description": "",
     "main": "server.js",
     "scripts": {
-        "build": "tsc",
+        "prisma:generate": "prisma generate",
+        "build": "pnpm prisma:generate && tsc",
         "dev": "tsx --inspect --watch --env-file=.env src/server.ts",
         "staging": "node dist/src/server.js",
         "prod": "node dist/src/server.js",

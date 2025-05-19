@@ -153,11 +153,12 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
         "fromEnvVar": "DATABASE_URL",
-        "value": "postgresql://postgres:jgsdsepol1993@localhost:5432/db_shopturbo?schema=public"
+        "value": null
       }
     }
   },
