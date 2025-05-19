@@ -25,26 +25,6 @@ export class UsersRepository extends User {
         }
     }
 
-    async getPassword() {
-        try {
-            const password = await prismaClient.user.findUnique({
-                where: {
-                    email: this.email,
-                },
-                select: {
-                    password: true,
-                },
-            });
-            return password;
-        } catch (err) {
-            console.error(
-                `\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to search for a hash in the database: \x1b[0m\n`,
-                err
-            );
-            return false;
-        }
-    }
-
     async create() {
         try {
             const hash = await hashPassword(this.password);
