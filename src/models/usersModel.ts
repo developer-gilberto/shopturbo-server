@@ -5,9 +5,9 @@ export class User {
     protected email: string;
     protected password: string;
 
-    constructor(reqBody: IUser) {
-        this.name = reqBody.name;
-        this.email = reqBody.email;
-        this.password = reqBody.password;
+    constructor(userData: IUser) {
+        this.name = userData.name;
+        this.email = userData.email;
+        this.password = userData.password;
     }
 }

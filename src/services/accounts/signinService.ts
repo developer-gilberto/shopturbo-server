@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { IReqBody } from '../../interfaces/usersInterfaces';
 import { signinSchema } from '../../schemas/signinSchema';
-import { User } from '../../models/usersModel';
 import { UsersRepository } from '../../repositories/usersRepository';
 import { comparePassword } from '../../helpers/hashHelper';
 import { generateJWT } from '../../helpers/jwtHelper';
@@ -11,7 +10,7 @@ export async function signInService(
     res: Response
 ) {
     try {
-        const safeData = signinSchema().safeParse(new User(req.body));
+        const safeData = signinSchema().safeParse(req.body);
 
         if (!safeData.success) {
             res.status(400).json({

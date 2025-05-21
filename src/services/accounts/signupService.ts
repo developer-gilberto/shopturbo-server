@@ -19,7 +19,7 @@ export async function signUpService(
             return;
         }
 
-        const safeData = signupSchema().safeParse(new User(req.body));
+        const safeData = signupSchema().safeParse(req.body);
 
         if (!safeData.success) {
             res.status(400).json({
