@@ -8,7 +8,7 @@
         "prisma:migrate": "npx prisma migrate deploy",
         "build": "pnpm prisma:generate && tsc",
         "dev": "tsx --inspect --watch --env-file=.env src/server.ts",
-        "staging": "node dist/src/server.js",
+        "homolog": "node dist/src/server.js",
         "prod": "node dist/src/server.js",
         "test": "jest"
     },

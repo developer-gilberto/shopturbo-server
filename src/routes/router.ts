@@ -1,19 +1,13 @@
 import { Router } from 'express';
-import { signUpService } from '../services/accounts/signupService';
-import { signInService } from '../services/accounts/signinService';
+import * as usersAuthService from '../services/auth/users';
 import { verifyToken } from '../middlewares/verifyToken';
-import { pingTestService } from '../services/pingTestService';
+import { pingTestService } from '../services/auth/pingTestService';
 
 const router = Router();
 
-router.get('/private-ping', verifyToken, pingTestService);
+router.get('/test/private-ping', verifyToken, pingTestService);
 
-router.post('/accounts/signup', (req, res) => {
-    signUpService(req, res);
-});
-
-router.post('/accounts/signin', (req, res) => {
-    signInService(req, res);
-});
+router.post('/auth/users/signup', usersAuthService.signUp);
+router.post('/auth/users/signin', usersAuthService.signIn);
 
 export { router };

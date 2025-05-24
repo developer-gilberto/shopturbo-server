@@ -1,14 +1,11 @@
 import { Request, Response } from 'express';
-import { IReqBody } from '../../interfaces/usersInterfaces';
-import { signinSchema } from '../../schemas/signinSchema';
-import { UsersRepository } from '../../repositories/usersRepository';
-import { comparePassword } from '../../helpers/hashHelper';
-import { generateJWT } from '../../helpers/jwtHelper';
+import { IReqBody } from '../../../interfaces/usersInterfaces';
+import { signinSchema } from '../../../schemas/signinSchema';
+import { UsersRepository } from '../../../repositories/usersRepository';
+import { comparePassword } from '../../../helpers/hashHelper';
+import { generateJWT } from '../../../helpers/jwtHelper';
 
-export async function signInService(
-    req: Request<{}, {}, IReqBody>,
-    res: Response
-) {
+export async function signIn(req: Request<{}, {}, IReqBody>, res: Response) {
     try {
         const safeData = signinSchema().safeParse(req.body);
 

@@ -1,14 +1,10 @@
 import { Request, Response } from 'express';
-import { IReqBody } from '../../interfaces/usersInterfaces';
-import { User } from '../../models/usersModel';
-import { signupSchema } from '../../schemas/signupSchema';
-import { UsersRepository } from '../../repositories/usersRepository';
-import { generateJWT } from '../../helpers/jwtHelper';
+import { IReqBody } from '../../../interfaces/usersInterfaces';
+import { signupSchema } from '../../../schemas/signupSchema';
+import { UsersRepository } from '../../../repositories/usersRepository';
+import { generateJWT } from '../../../helpers/jwtHelper';
 
-export async function signUpService(
-    req: Request<{}, {}, IReqBody>,
-    res: Response
-) {
+export async function signUp(req: Request<{}, {}, IReqBody>, res: Response) {
     try {
         if (!req.body.termsOfUse || req.body.termsOfUse !== 'on') {
             res.status(400).json({
