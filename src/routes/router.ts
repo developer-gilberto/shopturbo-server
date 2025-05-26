@@ -11,14 +11,23 @@ router.get('/test/private-ping', verifyToken, pingTestService);
 router.post('/auth/users/signup', usersAuthService.signUp);
 router.post('/auth/users/signin', usersAuthService.signIn);
 
-// Gerar o link de autorização,
 router.get(
     '/auth/api/shopee/generate-auth-url',
     verifyToken,
     apiAuthService.generateAuthorizationUrl
 );
-// adquirir autorização da loja,
-// usar o código de autorização,
-// obter e atualizar o token de acesso.
+
+router.post(
+    '/auth/api/shopee/get-access-token',
+    verifyToken,
+    apiAuthService.getAccessToken
+);
+
+// atualizar o accessToken com o refreshToken.
+router.post(
+    '/auth/api/shopee/update-access-token',
+    verifyToken
+    // apiAuthService.updateAccessToken
+);
 
 export { router };
