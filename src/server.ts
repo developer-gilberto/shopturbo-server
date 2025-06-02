@@ -8,7 +8,16 @@ const server = express();
 server.use(express.urlencoded({ extended: true }));
 server.use(express.json());
 server.use(helmet());
-server.use(cors());
+server.use(
+    cors({
+        origin:
+            process.env.NODE_ENV === 'production' || 'homolog'
+                ? 'https://shopturbo-server.onrender.com'
+                : '*',
+        credentials:
+            process.env.NODE_ENV === 'production' || 'homolog' ? true : false,
+    })
+);
 
 server.use(router);
 
