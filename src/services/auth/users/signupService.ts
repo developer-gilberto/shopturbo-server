@@ -67,6 +67,16 @@ export async function signUp(req: Request<{}, {}, IReqBody>, res: Response) {
             return;
         }
 
+        res.cookie('authToken', authToken, {
+            httpOnly: true,
+            secure:
+                process.env.NODE_ENV === 'production' || 'homolog'
+                    ? true
+                    : false,
+            sameSite: 'none',
+            //   maxAge: response.data.expire_in * 1000, // Em milissegundos
+        });
+
         res.status(201).json({
             error: false,
             message: 'Account created successfully!',

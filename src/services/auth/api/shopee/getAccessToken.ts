@@ -19,26 +19,26 @@ export async function getAccessToken(req: Request, res: Response) {
 
         const { code, shop_id } = req.query;
 
-        // criar objeto -> partnerShopee.partnerId
+        // criar objeto ou class -> partnerShopee.partnerId
         const response = await axios.post(encodeUrl, {
             code: code,
             shop_id: Number(shop_id),
             partner_id: Number(partnerId),
         });
 
-        // exemplo da response com dados fakes:
-
         /*
+        // exemplo da response com dados fakes:
         response.data:  {
-            refresh_token: '72734a68544c54656d63664e63481234',
-            access_token: '6850514259537a7469414c6a6971kuju',
-            expire_in: 14209, // em segundos
+            refresh_token: '72734a68544c54656d63664e63481234', // O "refresh_token" é um parâmetro usado para atualizar o access_token. Cada refresh_token é válido por 30 dias e só pode ser usado uma vez pelo shop_id.
+            access_token: '6850514259537a7469414c6a6971kuju', // "access_token" é válido por 4 horas e pode ser usado diversas vezes.
+            expire_in: 14209, // 4 horas em segundos
             request_id: 'e3e3e7f336003e46d42f697ad63176',
             error: '',
             message: ''
         }
         */
 
+        // -> Cada token é válido por 4 horas e pode ser usado diversas vezes. No entanto, você precisa atualizar o token fazendo uma chamada de RefreshAcessToken antes que ele expire para conseguir um novo token de acesso.
         const accessToken = response.data.access_token;
         // const accessTokenExpireIn = response.data.expire_in;
 
