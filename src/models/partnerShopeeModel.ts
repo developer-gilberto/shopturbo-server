@@ -1,8 +1,8 @@
 import { IPartner } from '../interfaces/partnersInterfaces';
 
 export class PartnerShopee {
-    protected partnerId;
-    protected partnerKey;
+    protected readonly partnerId;
+    protected readonly partnerKey;
 
     constructor(partner: IPartner) {
         this.partnerId = partner.id;
