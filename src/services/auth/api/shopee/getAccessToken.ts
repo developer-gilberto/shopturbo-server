@@ -19,12 +19,15 @@ export async function getAccessToken(req: Request, res: Response) {
 
         const { code, shop_id } = req.query;
 
-        // criar objeto ou class -> partnerShopee.partnerId
         const response = await axios.post(encodeUrl, {
             code: code,
-            shop_id: Number(shop_id),
-            partner_id: Number(partnerId),
+            shop_id: Number(shop_id), // loja que vai conceder a autorizacao ao app
+            partner_id: Number(partnerId), // desenvolvedor do app
         });
+
+        // criar tabelas "shop" e "accessToken" no postgres e criar relacao entre o shop e token
+
+        // depois salvar o token no redis
 
         /*
         // exemplo da response com dados fakes:
@@ -42,7 +45,6 @@ export async function getAccessToken(req: Request, res: Response) {
         const accessToken = response.data.access_token;
         // const accessTokenExpireIn = response.data.expire_in;
 
-        // SALVER TOKEN NO POSTGRES/redis
         // associar o accessToken ao loggedUser
 
         res.status(200).json({

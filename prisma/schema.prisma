@@ -6,8 +6,8 @@
 
 generator client {
   provider = "prisma-client-js"
-}
   // output   = "../src/generated/prisma"
+}
 
 datasource db {
   provider = "postgresql"
@@ -15,11 +15,33 @@ datasource db {
 }
 
 model User {
-  id         String   @id @default(uuid()) @db.Uuid
-  name       String
-  email      String   @unique
-  password   String
-  createdAt  DateTime @default(now()) @map("created_at")
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now()) @map("created_at")
 
   @@map("users")
+}
+
+model Shop {
+  id           Int           @id
+  name         String?
+  accessTokens AccessToken[]
+
+  @@map("shop")
+}
+
+model AccessToken {
+  id           String   @id @default(uuid()) @db.Uuid
+  shopId       Int      @unique @map("shop_id")
+  refreshToken String   @unique @map("refresh_token")
+  accessToken  String   @map("access_token")
+  expireIn     Int      @map("expire_in")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  shop Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
+
+  @@map("access_token")
 }
