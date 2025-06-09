@@ -16,7 +16,7 @@ export class ShopRepository {
         this.expireIn = shop.expire_in;
     }
 
-    async create() {
+    async save() {
         try {
             return await prismaClient.shop.create({
                 data: {

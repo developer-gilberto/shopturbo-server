@@ -43,7 +43,7 @@ export async function getAccessToken(req: Request, res: Response) {
             res.status(response.status).json({
                 error: true,
                 message:
-                    'An error occurred while trying to get the access token from the Shopee API',
+                    'It was not possible to get the Shopee API access token :(',
             });
         }
 
@@ -52,7 +52,7 @@ export async function getAccessToken(req: Request, res: Response) {
             ...response.data,
         });
 
-        const shop = shopRepository.create();
+        const shop = shopRepository.save();
 
         // salvar o token no redis
 

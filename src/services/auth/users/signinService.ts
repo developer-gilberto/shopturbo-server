@@ -86,7 +86,7 @@ export async function signIn(req: Request<{}, {}, IReqBody>, res: Response) {
         res.status(200).json({
             error: false,
             message: 'Successful login :)',
-            // data: [{ authToken }],
+            authToken,
         });
     } catch (err) {
         console.error(
