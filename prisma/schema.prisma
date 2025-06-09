@@ -25,9 +25,9 @@ model User {
 }
 
 model Shop {
-  id           Int           @id
-  name         String?
-  accessTokens AccessToken[]
+  id          Int           @id
+  name        String?
+  AccessToken AccessToken[]
 
   @@map("shop")
 }

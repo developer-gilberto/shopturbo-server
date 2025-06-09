@@ -80,7 +80,7 @@ export async function signUp(req: Request<{}, {}, IReqBody>, res: Response) {
         res.status(201).json({
             error: false,
             message: 'Account created successfully!',
-            data: [{ authToken }],
+            // data: [{ authToken }],
         });
     } catch (err) {
         console.error(
