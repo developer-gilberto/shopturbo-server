@@ -61,7 +61,8 @@ export async function getAccessToken(req: ExtendedRequest, res: Response) {
         // shop que autorizou
         // shopeeAccessToken
 
-        const newShop = shopRepo.save(); // tratar essa operacao
+        //antes de salvar, verificar se ja esta salvo no db(colocar unique no shop da table users para nao duplicar shops)
+        const newShop = shopRepo.save();
 
         if ((await newShop) === null) {
             res.status(500).json({

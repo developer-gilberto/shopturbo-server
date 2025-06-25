@@ -1,7 +1,7 @@
-import { prismaClient } from '../db/dbConnection';
-import { hashPassword } from '../helpers/hashHelper';
-import { IUser } from '../interfaces/usersInterfaces';
-import { User } from '../models/usersModel';
+import { prismaClient } from "../db/dbConnection";
+import { hashPassword } from "../helpers/hashHelper";
+import { IUser } from "../interfaces/usersInterfaces";
+import { User } from "../models/usersModel";
 
 export class UsersRepository extends User {
     constructor(user: IUser) {
@@ -19,13 +19,13 @@ export class UsersRepository extends User {
         } catch (err) {
             console.error(
                 `\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to search for a user in the database: \x1b[0m\n`,
-                err
+                err,
             );
             return false;
         }
     }
 
-    async create() {
+    async save() {
         try {
             const hash = await hashPassword(this.password);
             if (!hash) return false;
@@ -42,7 +42,7 @@ export class UsersRepository extends User {
         } catch (err) {
             console.error(
                 `\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to save user to the database: \x1b[0m\n`,
-                err
+                err,
             );
             return false;
         }
