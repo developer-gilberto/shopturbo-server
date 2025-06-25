@@ -1,16 +1,15 @@
-import { Request, Response } from 'express';
-import { IReqBody } from '../../../interfaces/usersInterfaces';
-import { signupSchema } from '../../../schemas/signupSchema';
-import { UsersRepository } from '../../../repositories/usersRepository';
-import { generateJWT } from '../../../helpers/jwtHelper';
+import { Request, Response } from "express";
+import { IReqBody } from "../../../interfaces/usersInterfaces";
+import { signupSchema } from "../../../schemas/signupSchema";
+import { UsersRepository } from "../../../repositories/usersRepository";
+import { generateJWT } from "../../../helpers/jwtHelper";
 
 export async function signUp(req: Request<{}, {}, IReqBody>, res: Response) {
     try {
-        if (!req.body.termsOfUse || req.body.termsOfUse !== 'on') {
+        if (!req.body.termsOfUse || req.body.termsOfUse !== "on") {
             res.status(400).json({
                 error: true,
-                message:
-                    'You must accept the terms of use to create an account!',
+                message: "You must accept the terms of use to create an account!",
             });
             return;
         }
@@ -25,15 +24,14 @@ export async function signUp(req: Request<{}, {}, IReqBody>, res: Response) {
             return;
         }
 
-        const usersRepository = new UsersRepository(safeData.data);
+        const userRepo = new UsersRepository(safeData.data);
 
-        const storedUser = await usersRepository.getUserByEmail();
+        const storedUser = await userRepo.getUserByEmail();
 
         if (storedUser === false) {
             res.status(500).json({
                 error: true,
-                message:
-                    'An error occurred while trying to search for a user in the database.',
+                message: "An error occurred while trying to search for a user in the database.",
             });
             return;
         }
@@ -41,55 +39,48 @@ export async function signUp(req: Request<{}, {}, IReqBody>, res: Response) {
         if (storedUser) {
             res.status(409).json({
                 error: true,
-                message: 'This email is already in use. Try a different email.',
+                message: "This email is already in use. Try a different email.",
             });
             return;
         }
 
-        const user = await usersRepository.create();
+        const newUser = await userRepo.save();
 
-        if (!user) {
+        if (!newUser) {
             res.status(500).json({
                 error: true,
-                message: 'Error trying to register account in the database.',
+                message: "Error trying to register account in the database.",
             });
             return;
         }
 
-        const authToken = generateJWT(user);
+        const authToken = generateJWT(newUser);
 
         if (!authToken) {
             res.status(500).json({
                 error: true,
-                message:
-                    'An error occurred while trying to generate the token.',
+                message: "An error occurred while trying to generate the token.",
             });
             return;
         }
 
-        res.cookie('authToken', authToken, {
+        res.cookie("authToken", authToken, {
             httpOnly: true,
-            secure:
-                process.env.NODE_ENV === 'production' || 'homolog'
-                    ? true
-                    : false,
-            sameSite: 'none',
+            secure: process.env.NODE_ENV === "production" || "homolog" ? true : false,
+            sameSite: "none",
             //   maxAge: response.data.expire_in * 1000, // Em milissegundos
         });
 
         res.status(201).json({
             error: false,
-            message: 'Account created successfully!',
+            message: "Account created successfully!",
             authToken,
         });
     } catch (err) {
-        console.error(
-            '\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to create the account: \x1b[0m\n',
-            err
-        );
+        console.error("\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to create the account: \x1b[0m\n", err);
         res.status(500).json({
             error: true,
-            message: 'An error occurred while trying to create the account :(',
+            message: "An error occurred while trying to create the account :(",
         });
     }
 }
