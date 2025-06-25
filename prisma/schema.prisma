@@ -5,43 +5,50 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
-  // output   = "../src/generated/prisma"
+    provider = "prisma-client-js"
+    // output   = "../src/generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
 
 model User {
-  id        String   @id @default(uuid()) @db.Uuid
-  name      String
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now()) @map("created_at")
+    id        Int      @id @default(autoincrement())
+    name      String
+    email     String   @unique
+    password  String
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+    Shop      Shop[]
 
-  @@map("users")
+    @@map("users")
 }
 
 model Shop {
-  id          Int           @id
-  name        String?
-  AccessToken AccessToken[]
+    id                Int                @id @default(autoincrement())
+    userId            Int                @map("user_id") // FK
+    name              String?
+    createdAt         DateTime           @default(now()) @map("created_at")
+    updatedAt         DateTime           @updatedAt @map("updated_at")
+    ShopeeAccessToken ShopeeAccessToken?
 
-  @@map("shop")
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@map("shops")
 }
 
-model AccessToken {
-  id           String   @id @default(uuid()) @db.Uuid
-  shopId       Int      @unique @map("shop_id")
-  refreshToken String   @unique @map("refresh_token")
-  accessToken  String   @map("access_token")
-  expireIn     Int      @map("expire_in")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+model ShopeeAccessToken {
+    id           Int      @id @default(autoincrement())
+    shopId       Int      @unique @map("shop_id") // FK
+    refreshToken String   @unique @map("refresh_token")
+    accessToken  String   @map("access_token")
+    expireIn     Int      @map("expire_in")
+    createdAt    DateTime @default(now()) @map("created_at")
+    updatedAt    DateTime @updatedAt @map("updated_at")
 
-  shop Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
+    shop Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
 
-  @@map("access_token")
+    @@map("shopee_access_tokens")
 }

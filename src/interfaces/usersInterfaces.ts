@@ -9,11 +9,11 @@ export interface IReqBody extends IUser {
 }
 
 export interface IJwtPayload extends Partial<IUser> {
-    id?: string;
+    id: number;
     email: string;
 }
 
-import { Request } from 'express';
+import { Request } from "express";
 export type ExtendedRequest = Request & {
     loggedUser?: IJwtPayload;
 };

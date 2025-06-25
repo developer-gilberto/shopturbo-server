@@ -1,9 +1,10 @@
-import { Request, Response } from 'express';
-import { generateSignature } from './generateSignature';
-import axios from 'axios';
-import { ShopRepository } from '../../../../repositories/shopRepository';
+import { Request, Response } from "express";
+import { generateSignature } from "./generateSignature";
+import axios from "axios";
+import { ShopRepository } from "../../../../repositories/shopRepository";
+import { ExtendedRequest } from "../../../../interfaces/usersInterfaces";
 
-export async function getAccessToken(req: Request, res: Response) {
+export async function getAccessToken(req: ExtendedRequest, res: Response) {
     try {
         // verificar se o shop ja tem o accessToken no redis e/ou postgres
 
@@ -39,22 +40,38 @@ export async function getAccessToken(req: Request, res: Response) {
             message: ''
         }
         */
-        if (response.statusText !== 'OK') {
+        if (response.statusText !== "OK") {
             res.status(response.status).json({
                 error: true,
-                message:
-                    'It was not possible to get the Shopee API access token :(',
+                message: "It was not possible to get the Shopee API access token :(",
             });
+            return;
         }
 
-        const shopRepository = new ShopRepository({
-            shopId: Number(shop_id),
+        const loggedUser = req.loggedUser;
+
+        const shopRepo = new ShopRepository({
+            shopId: shop_id,
+            loggedUser,
             ...response.data,
         });
 
-        const shop = shopRepository.save();
+        // neste ponto eu sei:
+        // user logado,
+        // shop que autorizou
+        // shopeeAccessToken
 
-        // salvar o token no redis
+        const newShop = shopRepo.save(); // tratar essa operacao
+
+        if ((await newShop) === null) {
+            res.status(500).json({
+                error: true,
+                message: "An error occurred while trying to save the shop to the database",
+            });
+            return;
+        }
+
+        // salvar o accessToken no redis
 
         // -> Cada accessToken é válido por 4 horas e pode ser usado diversas vezes. No entanto, você precisa atualizar o token fazendo uma chamada de RefreshAcessToken antes que ele expire para conseguir um novo token de acesso.
         const { refresh_token, ...accessTokenData } = response.data;
@@ -63,19 +80,18 @@ export async function getAccessToken(req: Request, res: Response) {
 
         res.status(200).json({
             error: false,
-            message:
-                'Each accessToken is valid for 4 hours and can be used several times.',
-            data: accessTokenData,
+            message: "Each accessToken is valid for 4 hours and can be used several times.",
+            // data: accessTokenData, //nao enviar o refresh token para o frontend
+            data: response.data,
         });
     } catch (err) {
         console.error(
-            '\x1b[1m\x1b[31m[ ERROR ] an error occurred while trying to get the access token: \x1b[0m\n',
-            err
+            "\x1b[1m\x1b[31m[ ERROR ] an error occurred while trying to get the access token: \x1b[0m\n",
+            err,
         );
         res.status(500).json({
             error: true,
-            message:
-                'an error occurred while trying to get the access token :(',
+            message: "an error occurred while trying to get the access token :(",
         });
     }
 }
