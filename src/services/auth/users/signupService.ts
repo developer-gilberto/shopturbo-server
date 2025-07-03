@@ -9,7 +9,7 @@ export async function signUp(req: Request<{}, {}, IReqBody>, res: Response) {
         if (!req.body.termsOfUse || req.body.termsOfUse !== "on") {
             res.status(400).json({
                 error: true,
-                message: "You must accept the terms of use to create an account!",
+                message: "You must accept the terms of use to create an account! Expected string 'on' ",
             });
             return;
         }
@@ -24,9 +24,9 @@ export async function signUp(req: Request<{}, {}, IReqBody>, res: Response) {
             return;
         }
 
-        const userRepo = new UsersRepository(safeData.data);
+        const userRepo = new UsersRepository();
 
-        const storedUser = await userRepo.getUserByEmail();
+        const storedUser = await userRepo.getUserByEmail(safeData.data.email);
 
         if (storedUser === false) {
             res.status(500).json({
@@ -44,7 +44,7 @@ export async function signUp(req: Request<{}, {}, IReqBody>, res: Response) {
             return;
         }
 
-        const newUser = await userRepo.save();
+        const newUser = await userRepo.save(safeData.data);
 
         if (!newUser) {
             res.status(500).json({

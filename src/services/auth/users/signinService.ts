@@ -17,12 +17,9 @@ export async function signIn(req: Request<{}, {}, IReqBody>, res: Response) {
             return;
         }
 
-        const userRepo = new UsersRepository({
-            name: "",
-            ...safeData.data,
-        });
+        const userRepo = new UsersRepository();
 
-        const storedUser = await userRepo.getUserByEmail();
+        const storedUser = await userRepo.getUserByEmail(safeData.data.email);
 
         if (storedUser === false) {
             res.status(500).json({
