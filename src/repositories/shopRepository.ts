@@ -1,46 +1,49 @@
-import { IShop } from "../interfaces/shopInterfaces";
+import { ISaveShopParams } from "../interfaces/shopInterfaces";
 import { prismaClient } from "../db/dbConnection";
 
 export class ShopRepository {
-    public shopName?: string;
-    private readonly loggedUserId: number;
-    private readonly accessToken: string;
-    private readonly refreshToken: string;
-    private readonly expireIn: number;
-
-    constructor(data: IShop) {
-        this.shopName = data.shopName;
-        this.loggedUserId = data.loggedUser.id;
-        this.accessToken = data.access_token;
-        this.refreshToken = data.refresh_token;
-        this.expireIn = data.expire_in;
-    }
-
-    async save() {
+    async save(shopData: ISaveShopParams) {
         try {
-            return await prismaClient.shop.create({
+            const newShop = await prismaClient.shop.create({
                 data: {
-                    name: this.shopName,
-                    user: {
-                        connect: {
-                            id: this.loggedUserId,
-                        },
-                    },
+                    id: shopData.shopId,
+                    userId: shopData.userId,
                     ShopeeAccessToken: {
                         create: {
-                            accessToken: this.accessToken,
-                            refreshToken: this.refreshToken,
-                            expireIn: this.expireIn,
+                            accessToken: shopData.accessToken,
+                            refreshToken: shopData.refreshToken,
+                            expireIn: shopData.expireIn,
                         },
                     },
                 },
             });
+            return newShop;
         } catch (err) {
             console.error(
                 `\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to save the shop to the DB: \x1b[0m\n`,
                 err,
             );
             return null;
+        }
+    }
+
+    async getShopAndTokenByUserId(userId: number) {
+        try {
+            const shopAndToken = await prismaClient.shop.findFirst({
+                where: {
+                    userId: userId,
+                },
+                include: {
+                    ShopeeAccessToken: true,
+                },
+            });
+            return shopAndToken;
+        } catch (err) {
+            console.error(
+                `\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to search for the ShopWithToken in the database: \x1b[0m\n`,
+                err,
+            );
+            return false;
         }
     }
 }
