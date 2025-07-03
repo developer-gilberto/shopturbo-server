@@ -27,7 +27,7 @@ model User {
 }
 
 model Shop {
-    id                Int                @id @default(autoincrement())
+    id                Int                @id
     userId            Int                @map("user_id") // FK
     name              String?
     createdAt         DateTime           @default(now()) @map("created_at")
