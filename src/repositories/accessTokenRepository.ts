@@ -1,4 +1,4 @@
-import { prismaClient } from '../db/dbConnection';
+import { prismaClient } from "../db/dbConnection";
 
 export interface IAccessToken {
     shopId: number;
@@ -22,7 +22,7 @@ export class AccessTokenRepository {
 
     async save() {
         try {
-            return await prismaClient.accessToken.create({
+            return await prismaClient.shopeeAccessToken.create({
                 data: {
                     shopId: this.shopId,
                     refreshToken: this.refreshToken,
@@ -33,7 +33,7 @@ export class AccessTokenRepository {
         } catch (err) {
             console.error(
                 `\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to save the accessToken to the database: \x1b[0m\n`,
-                err
+                err,
             );
             return null;
         }
