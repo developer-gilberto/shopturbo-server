@@ -1,33 +1,15 @@
 import { prismaClient } from "../db/dbConnection";
-
-export interface IAccessToken {
-    shopId: number;
-    refresh_token: string;
-    access_token: string;
-    expire_in: number;
-}
+import { IAccessToken } from "../interfaces/accessTokenInterfaces";
 
 export class AccessTokenRepository {
-    private readonly shopId: number;
-    private readonly refreshToken: string;
-    private readonly accessToken: string;
-    private readonly expireIn: number;
-
-    constructor(data: IAccessToken) {
-        this.shopId = data.shopId;
-        this.refreshToken = data.refresh_token;
-        this.accessToken = data.access_token;
-        this.expireIn = data.expire_in;
-    }
-
-    async save() {
+    async save(data: IAccessToken) {
         try {
             return await prismaClient.shopeeAccessToken.create({
                 data: {
-                    shopId: this.shopId,
-                    refreshToken: this.refreshToken,
-                    accessToken: this.accessToken,
-                    expireIn: this.expireIn,
+                    shopId: data.shopId,
+                    refreshToken: data.refresh_token,
+                    accessToken: data.access_token,
+                    expireIn: data.expire_in,
                 },
             });
         } catch (err) {
