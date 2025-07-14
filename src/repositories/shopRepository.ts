@@ -1,8 +1,16 @@
 import { ISaveShopParams } from "../interfaces/shopInterfaces";
 import { prismaClient } from "../db/dbConnection";
+import { Shop as TShop } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
+
+type TShopWithToken = Prisma.ShopGetPayload<{
+    include: { ShopeeAccessToken: true };
+}>;
 
 export class ShopRepository {
-    async save(shopData: ISaveShopParams) {
+    async saveShopWithAccessToken(
+        shopData: ISaveShopParams,
+    ): Promise<{ error: boolean; data: TShop | null }> {
         try {
             const newShop = await prismaClient.shop.create({
                 data: {
@@ -17,17 +25,20 @@ export class ShopRepository {
                     },
                 },
             });
-            return newShop;
+            return { error: false, data: newShop };
         } catch (err) {
             console.error(
                 `\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to save the shop to the DB: \x1b[0m\n`,
                 err,
             );
-            return null;
+            return { error: true, data: null };
         }
     }
 
-    async getShopAndTokenByUserId(userId: number) {
+    async getShopAndTokenByUserId(userId: number): Promise<{
+        error: boolean;
+        data: TShopWithToken | null;
+    }> {
         try {
             const shopAndToken = await prismaClient.shop.findFirst({
                 where: {
@@ -37,13 +48,14 @@ export class ShopRepository {
                     ShopeeAccessToken: true,
                 },
             });
-            return shopAndToken;
+
+            return { error: false, data: shopAndToken };
         } catch (err) {
             console.error(
                 `\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to search for the ShopWithToken in the database: \x1b[0m\n`,
                 err,
             );
-            return false;
+            return { error: true, data: null };
         }
     }
 }
