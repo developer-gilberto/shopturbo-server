@@ -44,7 +44,7 @@ model ShopeeAccessToken {
     shopId       Int      @unique @map("shop_id") // FK
     refreshToken String   @unique @map("refresh_token")
     accessToken  String   @map("access_token")
-    expireIn     Int      @map("expire_in")
+    expireIn     DateTime @map("expire_in")
     createdAt    DateTime @default(now()) @map("created_at")
     updatedAt    DateTime @updatedAt @map("updated_at")
 
