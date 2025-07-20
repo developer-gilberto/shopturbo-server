@@ -1,10 +1,11 @@
 import { Response } from "express";
-import { ShopRepository } from "../../../../repositories/shopRepository";
 import { ExtendedRequest } from "../../../../interfaces/usersInterfaces";
 import { AccessTokenRepository } from "../../../../repositories/accessTokenRepository";
+import { ShopRepository } from "../../../../repositories/shopRepository";
+import { getAccessTokenSchema } from "../../../../schemas/getAccessTokenSchema";
+import { calculateTokenExpirationDate } from "./calculateTokenExpirationDate";
 import { requestAccessToken } from "./requestAccessToken";
 import { requestNewAccessToken } from "./requestNewAccessToken";
-import { getAccessTokenSchema } from "../../../../schemas/getAccessTokenSchema";
 
 export async function getAccessToken(req: ExtendedRequest, res: Response) {
     const safeData = getAccessTokenSchema().safeParse(req.query);
@@ -63,10 +64,8 @@ export async function getAccessToken(req: ExtendedRequest, res: Response) {
                 return;
             }
 
-            const tokenExpirationDate = new Date(
-                shopSaveResult.data!.updatedAt.getTime() +
-                    response.data.expire_in! * 1000,
-            );
+            const tokenExpirationDate =
+                shopSaveResult.data!.ShopeeAccessToken!.expireIn;
 
             res.status(200).json({
                 error: false,
@@ -81,14 +80,11 @@ export async function getAccessToken(req: ExtendedRequest, res: Response) {
             return;
         }
 
-        const tokenExpirationDate = new Date(
-            storedShop.data.ShopeeAccessToken!.updatedAt.getTime() +
-                storedShop.data.ShopeeAccessToken!.expireIn * 1000,
-        );
+        const tokenExpirationDate = storedShop.data.ShopeeAccessToken!.expireIn;
 
         const now = new Date();
         const expiredToken = now > tokenExpirationDate;
-        // const expiredToken = now > new Date("2021-01-01T00:44:59.614Z"); // <- teste com token expirado
+        // const expiredToken = now > new Date("2021-01-01T00:44:59.614Z"); // <- teste token expirado
 
         if (expiredToken) {
             const response = await requestNewAccessToken(
@@ -124,10 +120,11 @@ export async function getAccessToken(req: ExtendedRequest, res: Response) {
                 return;
             }
 
-            const tokenExpireIn = new Date(
-                accessTokenUpdateResult.data!.updatedAt.getTime() +
-                    response.data.expire_in! * 1000,
+            const tokenExpirationDate = calculateTokenExpirationDate(
+                accessTokenUpdateResult.data!.updatedAt.getTime(),
+                response.data.expire_in!,
             );
+
             res.status(200).json({
                 error: false,
                 message:
@@ -135,7 +132,7 @@ export async function getAccessToken(req: ExtendedRequest, res: Response) {
                 data: {
                     shopId: response.data.shop_id,
                     accessToken: accessTokenUpdateResult.data!.accessToken,
-                    expiresAt: tokenExpireIn,
+                    expiresAt: tokenExpirationDate,
                 },
             });
             return;
