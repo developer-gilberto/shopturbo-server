@@ -1,7 +1,7 @@
-import { ISaveShopParams } from "../interfaces/shopInterfaces";
-import { prismaClient } from "../db/dbConnection";
-import { Shop as TShop } from "@prisma/client";
 import type { Prisma } from "@prisma/client";
+import { prismaClient } from "../db/dbConnection";
+import { ISaveShopParams } from "../interfaces/shopInterfaces";
+import { calculateTokenExpirationDate } from "../services/auth/api/shopee/calculateTokenExpirationDate";
 
 type TShopWithToken = Prisma.ShopGetPayload<{
     include: { ShopeeAccessToken: true };
@@ -10,8 +10,12 @@ type TShopWithToken = Prisma.ShopGetPayload<{
 export class ShopRepository {
     async saveShopWithAccessToken(
         shopData: ISaveShopParams,
-    ): Promise<{ error: boolean; data: TShop | null }> {
+    ): Promise<{ error: boolean; data: TShopWithToken | null }> {
         try {
+            const expiresDate = calculateTokenExpirationDate(
+                Date.now(),
+                shopData.expireIn,
+            );
             const newShop = await prismaClient.shop.create({
                 data: {
                     id: shopData.shopId,
@@ -20,9 +24,12 @@ export class ShopRepository {
                         create: {
                             accessToken: shopData.accessToken,
                             refreshToken: shopData.refreshToken,
-                            expireIn: shopData.expireIn,
+                            expireIn: expiresDate,
                         },
                     },
+                },
+                include: {
+                    ShopeeAccessToken: true,
                 },
             });
             return { error: false, data: newShop };

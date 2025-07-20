@@ -1,18 +1,23 @@
 import { ShopeeAccessToken as TShopeeAccessToken } from "@prisma/client";
 import { prismaClient } from "../db/dbConnection";
 import { IAccessToken } from "../interfaces/accessTokenInterfaces";
+import { calculateTokenExpirationDate } from "../services/auth/api/shopee/calculateTokenExpirationDate";
 
 export class AccessTokenRepository {
     async save(
         data: IAccessToken,
     ): Promise<{ error: boolean; data: TShopeeAccessToken | null }> {
         try {
+            const expiresDate = calculateTokenExpirationDate(
+                Date.now(),
+                data.expire_in,
+            );
             const result = await prismaClient.shopeeAccessToken.create({
                 data: {
                     shopId: data.shopId,
                     refreshToken: data.refresh_token,
                     accessToken: data.access_token,
-                    expireIn: data.expire_in,
+                    expireIn: expiresDate,
                 },
             });
             return { error: false, data: result };
@@ -29,6 +34,10 @@ export class AccessTokenRepository {
         data: IAccessToken,
     ): Promise<{ error: boolean; data: TShopeeAccessToken | null }> {
         try {
+            const expiresDate = calculateTokenExpirationDate(
+                Date.now(),
+                data.expire_in,
+            );
             const result = await prismaClient.shopeeAccessToken.update({
                 where: {
                     shopId: data.shopId,
@@ -36,7 +45,7 @@ export class AccessTokenRepository {
                 data: {
                     refreshToken: data.refresh_token,
                     accessToken: data.access_token,
-                    expireIn: data.expire_in,
+                    expireIn: expiresDate,
                 },
             });
             return { error: false, data: result };
