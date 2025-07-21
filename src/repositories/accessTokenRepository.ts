@@ -10,20 +10,44 @@ export class AccessTokenRepository {
         try {
             const expiresDate = calculateTokenExpirationDate(
                 Date.now(),
-                data.expire_in,
+                data.expireIn,
             );
-            const result = await prismaClient.shopeeAccessToken.create({
-                data: {
-                    shopId: data.shopId,
-                    refreshToken: data.refresh_token,
-                    accessToken: data.access_token,
-                    expireIn: expiresDate,
+
+            const accessTokenData = await prismaClient.shopeeAccessToken.create(
+                {
+                    data: {
+                        shopId: data.shopId,
+                        refreshToken: data.refreshToken,
+                        accessToken: data.accessToken,
+                        expireIn: expiresDate,
+                    },
                 },
-            });
-            return { error: false, data: result };
+            );
+
+            return { error: false, data: accessTokenData };
         } catch (err) {
             console.error(
                 `\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to save the accessToken to the database: \x1b[0m\n`,
+                err,
+            );
+            return { error: true, data: null };
+        }
+    }
+
+    async getAccessTokenByShopId(
+        shopId: number,
+    ): Promise<{ error: boolean; data: TShopeeAccessToken | null }> {
+        try {
+            const accessToken = await prismaClient.shopeeAccessToken.findUnique(
+                {
+                    where: { shopId: shopId },
+                },
+            );
+
+            return { error: false, data: accessToken };
+        } catch (err) {
+            console.error(
+                `\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to get the accessToken to the database: \x1b[0m\n`,
                 err,
             );
             return { error: true, data: null };
@@ -36,18 +60,19 @@ export class AccessTokenRepository {
         try {
             const expiresDate = calculateTokenExpirationDate(
                 Date.now(),
-                data.expire_in,
+                data.expireIn,
             );
             const result = await prismaClient.shopeeAccessToken.update({
                 where: {
                     shopId: data.shopId,
                 },
                 data: {
-                    refreshToken: data.refresh_token,
-                    accessToken: data.access_token,
+                    refreshToken: data.refreshToken,
+                    accessToken: data.accessToken,
                     expireIn: expiresDate,
                 },
             });
+
             return { error: false, data: result };
         } catch (err) {
             console.error(
