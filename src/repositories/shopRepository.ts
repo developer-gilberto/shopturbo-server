@@ -3,11 +3,39 @@ import { prismaClient } from "../db/dbConnection";
 import { ISaveShopParams } from "../interfaces/shopInterfaces";
 import { calculateTokenExpirationDate } from "../services/auth/api/shopee/calculateTokenExpirationDate";
 
+type TShop = Prisma.ShopGetPayload<{}>;
+
 type TShopWithToken = Prisma.ShopGetPayload<{
     include: { ShopeeAccessToken: true };
 }>;
 
 export class ShopRepository {
+    async save(shopData: {
+        shopId: number;
+        userId: number;
+    }): Promise<{ error: boolean; data: TShop | null }> {
+        try {
+            const newShop = await prismaClient.shop.create({
+                data: {
+                    id: shopData.shopId,
+                    user: {
+                        connect: {
+                            id: shopData.userId,
+                        },
+                    },
+                },
+            });
+
+            return { error: false, data: newShop };
+        } catch (err) {
+            console.error(
+                `\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to save the shop to the DB: \x1b[0m\n`,
+                err,
+            );
+            return { error: true, data: null };
+        }
+    }
+
     async saveShopWithAccessToken(
         shopData: ISaveShopParams,
     ): Promise<{ error: boolean; data: TShopWithToken | null }> {
@@ -16,6 +44,7 @@ export class ShopRepository {
                 Date.now(),
                 shopData.expireIn,
             );
+
             const newShop = await prismaClient.shop.create({
                 data: {
                     id: shopData.shopId,
@@ -32,10 +61,11 @@ export class ShopRepository {
                     ShopeeAccessToken: true,
                 },
             });
+
             return { error: false, data: newShop };
         } catch (err) {
             console.error(
-                `\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to save the shop to the DB: \x1b[0m\n`,
+                `\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to save the shop with accessToken to the DB: \x1b[0m\n`,
                 err,
             );
             return { error: true, data: null };
