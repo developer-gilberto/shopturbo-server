@@ -9,6 +9,7 @@ import { requestNewAccessToken } from "./requestNewAccessToken";
 
 export async function getAccessToken(req: ExtendedRequest, res: Response) {
     const safeData = getAccessTokenSchema().safeParse(req.query);
+
     if (!safeData.success) {
         res.status(400).json({
             error: true,
@@ -16,22 +17,24 @@ export async function getAccessToken(req: ExtendedRequest, res: Response) {
         });
         return;
     }
+
     try {
-        const shopRepo = new ShopRepository();
-        const storedShop = await shopRepo.getShopAndTokenByUserId(
-            Number(req.loggedUser!.id),
+        const accessTokenRepo = new AccessTokenRepository();
+
+        const storedAccessToken = await accessTokenRepo.getAccessTokenByShopId(
+            Number(req.query.shop_id),
         );
 
-        if (storedShop.error) {
+        if (storedAccessToken.error) {
             res.status(500).json({
                 error: true,
                 message:
-                    "An error occurred while trying to search for the ShopWithToken in the database.",
+                    "An error occurred while trying to search for the accessToken in the database.",
             });
             return;
         }
 
-        if (!storedShop.data) {
+        if (!storedAccessToken.data) {
             const response = await requestAccessToken(
                 safeData.data.code,
                 Number(safeData.data.shop_id),
@@ -47,71 +50,81 @@ export async function getAccessToken(req: ExtendedRequest, res: Response) {
                 return;
             }
 
-            const shopSaveResult = await shopRepo.saveShopWithAccessToken({
+            const shopRepo = new ShopRepository();
+
+            const newShop = await shopRepo.save({
                 shopId: Number(safeData.data.shop_id),
-                userId: req.loggedUser!.id,
-                accessToken: response.data.access_token!,
-                refreshToken: response.data.refresh_token!,
-                expireIn: response.data.expire_in!,
+                userId: Number(req.loggedUser!.id),
             });
 
-            if (shopSaveResult.error) {
+            if (newShop.error) {
                 res.status(500).json({
                     error: true,
                     message:
-                        "An error occurred while trying to save the shop to the database",
+                        "An error occurred while trying to save the shop to the DB. ",
                 });
                 return;
             }
 
-            const tokenExpirationDate =
-                shopSaveResult.data!.ShopeeAccessToken!.expireIn;
+            const accessTokenData = await accessTokenRepo.save({
+                shopId: Number(newShop.data!.id),
+                refreshToken: response.data.refresh_token!,
+                accessToken: response.data.access_token!,
+                expireIn: response.data.expire_in!,
+            });
+
+            if (accessTokenData.error) {
+                res.status(500).json({
+                    error: true,
+                    message:
+                        "An error occurred while trying to save the accessToken to the database",
+                });
+                return;
+            }
 
             res.status(200).json({
                 error: false,
                 message:
                     "The access token expires in 4 hours and can be used multiple times. If you do not use shopTurbo for more than 30 days, you will need to connect to the Shopee API again to grant authorization to shopTurbo again.",
                 data: {
-                    shopId: response.data.shop_id,
-                    accessToken: response.data.access_token,
-                    expiresAt: tokenExpirationDate,
+                    shopId: accessTokenData.data!.shopId,
+                    accessToken: accessTokenData.data!.accessToken,
+                    expiresAt: accessTokenData.data!.expireIn,
                 },
             });
             return;
         }
 
-        const tokenExpirationDate = storedShop.data.ShopeeAccessToken!.expireIn;
+        const tokenExpirationDate = storedAccessToken.data.expireIn;
 
         const now = new Date();
         const expiredToken = now > tokenExpirationDate;
-        // const expiredToken = now > new Date("2021-01-01T00:44:59.614Z"); // <- teste token expirado
+        // const expiredToken = now > new Date("1999-01-01T00:44:59.614Z"); // <-- teste com token expirado
 
         if (expiredToken) {
             const response = await requestNewAccessToken(
                 Number(safeData.data.shop_id),
-                storedShop.data.ShopeeAccessToken!.refreshToken,
+                storedAccessToken.data.refreshToken,
             );
 
             if (response.error) {
                 res.status(500).json({
                     error: true,
                     message:
-                        "An error occurred while trying to get the accessToken from the Shopee API. " +
+                        "An error occurred while trying to get the newAccessToken from the Shopee API. " +
                         response.data.message,
                 });
                 return;
             }
 
-            const accessTokenRepo = new AccessTokenRepository();
-
-            const accessTokenUpdateResult = await accessTokenRepo.update({
+            const accessTokenData = await accessTokenRepo.update({
                 shopId: Number(safeData.data.shop_id),
-                refresh_token: response.data.refresh_token!,
-                access_token: response.data.access_token!,
-                expire_in: response.data.expire_in!,
+                refreshToken: response.data.refresh_token!,
+                accessToken: response.data.access_token!,
+                expireIn: response.data.expire_in!,
             });
 
-            if (accessTokenUpdateResult.error) {
+            if (accessTokenData.error) {
                 res.status(500).json({
                     error: true,
                     message:
@@ -120,19 +133,14 @@ export async function getAccessToken(req: ExtendedRequest, res: Response) {
                 return;
             }
 
-            const tokenExpirationDate = calculateTokenExpirationDate(
-                accessTokenUpdateResult.data!.updatedAt.getTime(),
-                response.data.expire_in!,
-            );
-
             res.status(200).json({
                 error: false,
                 message:
                     "The access token expires in 4 hours and can be used multiple times. If you do not use shopTurbo for more than 30 days, you will need to connect to the Shopee API again to grant authorization to shopTurbo again.",
                 data: {
                     shopId: response.data.shop_id,
-                    accessToken: accessTokenUpdateResult.data!.accessToken,
-                    expiresAt: tokenExpirationDate,
+                    accessToken: accessTokenData.data!.accessToken,
+                    expiresAt: accessTokenData.data!.expireIn,
                 },
             });
             return;
@@ -143,21 +151,22 @@ export async function getAccessToken(req: ExtendedRequest, res: Response) {
             message:
                 "The access token expires in 4 hours and can be used multiple times. If you do not use shopTurbo for more than 30 days, you will need to connect to the Shopee API again to grant authorization to shopTurbo again.",
             data: {
-                shopId: storedShop.data.ShopeeAccessToken!.shopId,
-                accessToken: storedShop.data.ShopeeAccessToken!.accessToken,
+                shopId: storedAccessToken.data.shopId,
+                accessToken: storedAccessToken.data.accessToken,
                 expiresAt: tokenExpirationDate,
             },
         });
+
         return;
     } catch (err) {
         console.error(
-            "\x1b[1m\x1b[31m[ ERROR ] an error occurred while trying to get the access_token: \x1b[0m\n",
+            "\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to get the access_token: \x1b[0m\n",
             err,
         );
         res.status(500).json({
             error: true,
             message:
-                "an error occurred while trying to get the access token :(",
+                "An error occurred while trying to get the access token from the Shopee API :(",
         });
     }
 }

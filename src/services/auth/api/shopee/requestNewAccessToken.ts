@@ -32,10 +32,7 @@ export async function requestNewAccessToken(
                 `\x1b[1m\x1b[33m[ WARNING ]: \x1b[0m\n`,
                 response.data,
             );
-            return {
-                error: true,
-                data: response.data,
-            };
+            return { error: true, data: response.data };
         }
 
         return { error: false, data: response.data };
