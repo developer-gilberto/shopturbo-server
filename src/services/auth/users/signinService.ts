@@ -21,15 +21,16 @@ export async function signIn(req: Request<{}, {}, IReqBody>, res: Response) {
 
         const storedUser = await userRepo.getUserByEmail(safeData.data.email);
 
-        if (storedUser === false) {
+        if (storedUser.error) {
             res.status(500).json({
                 error: true,
-                message: "An error occurred while trying to search for a user in the database.",
+                message:
+                    "An error occurred while trying to search for a user in the database.",
             });
             return;
         }
 
-        if (!storedUser) {
+        if (!storedUser.data) {
             res.status(401).json({
                 error: true,
                 message: "Incorrect email and/or password. Access denied.",
@@ -37,17 +38,21 @@ export async function signIn(req: Request<{}, {}, IReqBody>, res: Response) {
             return;
         }
 
-        const macth = await comparePassword(safeData.data.password, storedUser.password);
+        const result = await comparePassword(
+            safeData.data.password,
+            storedUser.data.password,
+        );
 
-        if (macth === null) {
+        if (result.error) {
             res.status(500).json({
                 error: true,
-                message: "An error occurred while trying to hash the password.",
+                message:
+                    "An error occurred while trying to check the password.",
             });
             return;
         }
 
-        if (!macth) {
+        if (!result.match) {
             res.status(401).json({
                 error: true,
                 message: "Incorrect email and/or password. Access denied.",
@@ -55,19 +60,23 @@ export async function signIn(req: Request<{}, {}, IReqBody>, res: Response) {
             return;
         }
 
-        const authToken = generateJWT(storedUser);
+        const authToken = generateJWT(storedUser.data);
 
         if (!authToken) {
             res.status(500).json({
                 error: true,
-                message: "An error occurred while trying to generate the token.",
+                message:
+                    "An error occurred while trying to generate the token.",
             });
             return;
         }
 
         res.cookie("authToken", authToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production" || "homolog" ? true : false,
+            secure:
+                process.env.NODE_ENV === "production" || "homolog"
+                    ? true
+                    : false,
             sameSite: "none",
             //   maxAge: response.data.expire_in * 1000, // Em milissegundos
         });
@@ -78,7 +87,10 @@ export async function signIn(req: Request<{}, {}, IReqBody>, res: Response) {
             authToken,
         });
     } catch (err) {
-        console.error("\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to login: \x1b[0m\n", err);
+        console.error(
+            "\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to login: \x1b[0m\n",
+            err,
+        );
         res.status(500).json({
             error: true,
             message: "An error occurred while trying to login :(",

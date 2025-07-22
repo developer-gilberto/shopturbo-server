@@ -14,7 +14,10 @@ export function generateJWT(user: Omit<IJwtPayload, "password">) {
             // { expiresIn: 30 } // 30s
         );
     } catch (err) {
-        console.error("\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to generate the JWT: \x1b[0m\n", err);
+        console.error(
+            "\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to generate the JWT: \x1b[0m\n",
+            err,
+        );
         return null;
     }
 }

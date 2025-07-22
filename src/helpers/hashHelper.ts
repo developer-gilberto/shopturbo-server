@@ -1,4 +1,4 @@
-import bcrypt from 'bcryptjs';
+import bcrypt from "bcryptjs";
 
 export async function hashPassword(password: string) {
     try {
@@ -6,8 +6,8 @@ export async function hashPassword(password: string) {
         return await bcrypt.hash(password, salt);
     } catch (err) {
         console.error(
-            '\x1b[1m\x1b[31m[ ERROR ] Error generating password hash: \x1b[0m\n',
-            err
+            "\x1b[1m\x1b[31m[ ERROR ] Error generating password hash: \x1b[0m\n",
+            err,
         );
         return null;
     }
@@ -15,15 +15,16 @@ export async function hashPassword(password: string) {
 
 export async function comparePassword(
     inputPassword: string,
-    passwordStored: string
-) {
+    passwordStored: string,
+): Promise<{ error: boolean; match: boolean | null }> {
     try {
-        return await bcrypt.compare(inputPassword, passwordStored);
+        const result = await bcrypt.compare(inputPassword, passwordStored);
+        return { error: false, match: result };
     } catch (err) {
         console.error(
-            '\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to compare the password hash: \x1b[0m\n',
-            err
+            "\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to compare the password hash: \x1b[0m\n",
+            err,
         );
-        return null;
+        return { error: true, match: null };
     }
 }

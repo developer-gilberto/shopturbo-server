@@ -1,29 +1,40 @@
 import { prismaClient } from "../db/dbConnection";
 import { hashPassword } from "../helpers/hashHelper";
 import { IUser } from "../interfaces/usersInterfaces";
+import { User as TUser, Prisma } from "@prisma/client";
+
+type TUserWithShop = Prisma.UserGetPayload<{
+    include: { Shop: true };
+}>;
 
 export class UsersRepository {
-    async getUserByEmail(email: string) {
+    async getUserByEmail(
+        email: string,
+    ): Promise<{ error: boolean; data: TUser | null }> {
         try {
             const user = await prismaClient.user.findUnique({
                 where: {
                     email: email,
                 },
             });
-            return user;
+
+            return { error: false, data: user };
         } catch (err) {
             console.error(
                 `\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to search for a user in the database: \x1b[0m\n`,
                 err,
             );
-            return false;
+
+            return { error: true, data: null };
         }
     }
 
-    async save(userData: IUser) {
+    async save(
+        userData: IUser,
+    ): Promise<{ error: boolean; data: Omit<TUser, "password"> | null }> {
         try {
             const hash = await hashPassword(userData.password);
-            if (!hash) return false;
+            if (!hash) return { error: true, data: null };
 
             const result = await prismaClient.user.create({
                 data: {
@@ -33,19 +44,22 @@ export class UsersRepository {
                 },
             });
             const { password, ...user } = result;
-            return user;
+
+            return { error: false, data: user };
         } catch (err) {
             console.error(
                 `\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to save user to the database: \x1b[0m\n`,
                 err,
             );
-            return false;
+            return { error: true, data: null };
         }
     }
 
-    async findUserWithShop(userId: number) {
+    async findUserWithShop(
+        userId: number,
+    ): Promise<{ error: boolean; data: TUserWithShop | null }> {
         try {
-            return await prismaClient.user.findUnique({
+            const userAndShop = await prismaClient.user.findUnique({
                 where: {
                     id: userId,
                 },
@@ -53,12 +67,14 @@ export class UsersRepository {
                     Shop: true,
                 },
             });
+
+            return { error: false, data: userAndShop };
         } catch (err) {
             console.error(
                 `\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to search for the userShop in the database: \x1b[0m\n`,
                 err,
             );
-            return false;
+            return { error: true, data: null };
         }
     }
 }

@@ -9,7 +9,8 @@ export async function signUp(req: Request<{}, {}, IReqBody>, res: Response) {
         if (!req.body.termsOfUse || req.body.termsOfUse !== "on") {
             res.status(400).json({
                 error: true,
-                message: "You must accept the terms of use to create an account! Expected string 'on' ",
+                message:
+                    "You must accept the terms of use to create an account! Expected string 'on' ",
             });
             return;
         }
@@ -28,15 +29,16 @@ export async function signUp(req: Request<{}, {}, IReqBody>, res: Response) {
 
         const storedUser = await userRepo.getUserByEmail(safeData.data.email);
 
-        if (storedUser === false) {
+        if (storedUser.error) {
             res.status(500).json({
                 error: true,
-                message: "An error occurred while trying to search for a user in the database.",
+                message:
+                    "An error occurred while trying to search for a user in the database.",
             });
             return;
         }
 
-        if (storedUser) {
+        if (storedUser.data) {
             res.status(409).json({
                 error: true,
                 message: "This email is already in use. Try a different email.",
@@ -46,7 +48,7 @@ export async function signUp(req: Request<{}, {}, IReqBody>, res: Response) {
 
         const newUser = await userRepo.save(safeData.data);
 
-        if (!newUser) {
+        if (newUser.error) {
             res.status(500).json({
                 error: true,
                 message: "Error trying to register account in the database.",
@@ -54,19 +56,23 @@ export async function signUp(req: Request<{}, {}, IReqBody>, res: Response) {
             return;
         }
 
-        const authToken = generateJWT(newUser);
+        const authToken = generateJWT(newUser.data!);
 
         if (!authToken) {
             res.status(500).json({
                 error: true,
-                message: "An error occurred while trying to generate the token.",
+                message:
+                    "An error occurred while trying to generate the token.",
             });
             return;
         }
 
         res.cookie("authToken", authToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production" || "homolog" ? true : false,
+            secure:
+                process.env.NODE_ENV === "production" || "homolog"
+                    ? true
+                    : false,
             sameSite: "none",
             //   maxAge: response.data.expire_in * 1000, // Em milissegundos
         });
@@ -77,7 +83,10 @@ export async function signUp(req: Request<{}, {}, IReqBody>, res: Response) {
             authToken,
         });
     } catch (err) {
-        console.error("\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to create the account: \x1b[0m\n", err);
+        console.error(
+            "\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to create the account: \x1b[0m\n",
+            err,
+        );
         res.status(500).json({
             error: true,
             message: "An error occurred while trying to create the account :(",

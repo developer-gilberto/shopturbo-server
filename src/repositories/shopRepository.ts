@@ -1,9 +1,7 @@
-import type { Prisma } from "@prisma/client";
+import type { Prisma, Shop as TShop } from "@prisma/client";
 import { prismaClient } from "../db/dbConnection";
 import { ISaveShopParams } from "../interfaces/shopInterfaces";
 import { calculateTokenExpirationDate } from "../services/auth/api/shopee/calculateTokenExpirationDate";
-
-type TShop = Prisma.ShopGetPayload<{}>;
 
 type TShopWithToken = Prisma.ShopGetPayload<{
     include: { ShopeeAccessToken: true };

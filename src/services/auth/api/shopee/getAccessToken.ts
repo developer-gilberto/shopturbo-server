@@ -3,7 +3,6 @@ import { ExtendedRequest } from "../../../../interfaces/usersInterfaces";
 import { AccessTokenRepository } from "../../../../repositories/accessTokenRepository";
 import { ShopRepository } from "../../../../repositories/shopRepository";
 import { getAccessTokenSchema } from "../../../../schemas/getAccessTokenSchema";
-import { calculateTokenExpirationDate } from "./calculateTokenExpirationDate";
 import { requestAccessToken } from "./requestAccessToken";
 import { requestNewAccessToken } from "./requestNewAccessToken";
 
