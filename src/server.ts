@@ -1,7 +1,7 @@
-import express, { Response } from 'express';
-import { router } from './routes/router';
-import helmet from 'helmet';
-import cors from 'cors';
+import cors from "cors";
+import helmet from "helmet";
+import express from "express";
+import { router } from "./routes/router";
 
 const server = express();
 
@@ -11,20 +11,16 @@ server.use(helmet());
 server.use(
     cors({
         origin:
-            process.env.NODE_ENV === 'production' || 'homolog'
-                ? 'https://shopturbo-server.onrender.com'
-                : '*',
+            process.env.NODE_ENV === "production" || "homolog"
+                ? "https://shopturbo-server.onrender.com"
+                : "*",
         credentials:
-            process.env.NODE_ENV === 'production' || 'homolog' ? true : false,
-    })
+            process.env.NODE_ENV === "production" || "homolog" ? true : false,
+    }),
 );
 
 server.use(router);
 
-server.get('/', (_req, res: Response) => {
-    res.status(200).json({ message: 'Hello world!' });
-});
-
 server.listen(process.env.PORT, () => {
-    console.info('\x1b[1m\x1b[32m-> Server is running :) \x1b[0m');
+    console.info("\x1b[1m\x1b[32m-> Server is running :) \x1b[0m");
 });

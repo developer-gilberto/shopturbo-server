@@ -1,33 +1,31 @@
-import { Router } from 'express';
-import * as usersAuthService from '../services/auth/users';
-import { verifyToken } from '../middlewares/verifyToken';
-import { pingTestService } from '../services/auth/pingTestService';
-import * as apiAuthService from '../services/auth/api/shopee';
+import { Response, Router } from "express";
+import * as userController from "../domains/user/controllers";
+import { verifyToken } from "../infra/authorization/verifyJWT";
+import { accessTokenController } from "../domains/accessToken/controllers/accessTokenController";
+import { authUrlController } from "../domains/authorizationUrl/controllers/authUrlController";
 
 const router = Router();
 
-router.get('/test/private-ping', verifyToken, pingTestService);
+router.get("/", (_req, res: Response) => {
+    res.status(200).json({ message: "Hello world!" });
+});
 
-router.post('/auth/users/signup', usersAuthService.signUp);
-router.post('/auth/users/signin', usersAuthService.signIn);
+router.get("/ping", verifyToken, (_req, res: Response) => {
+    res.status(200).json({ message: "pong" });
+});
 
-router.get(
-    '/auth/api/shopee/generate-auth-url',
-    verifyToken,
-    apiAuthService.generateAuthorizationUrl
-);
+router.post("/signup", userController.signUp);
+router.post("/signin", userController.signIn);
+
+router.get("/api/shopee/get-auth-url", verifyToken, authUrlController);
+
+router.post("/api/shopee/get-access-token", verifyToken, accessTokenController);
 
 router.post(
-    '/auth/api/shopee/get-access-token',
+    "/api/shopee/update-access-token",
     verifyToken,
-    apiAuthService.getAccessToken
-);
-
-// atualizar o accessToken com o refreshToken.
-router.post(
-    '/auth/api/shopee/update-access-token',
-    verifyToken
-    // apiAuthService.updateAccessToken
+    // verificar se shopId tem um accessToken valido no db
+    // accessTokenController.updateAccessToken
 );
 
 export { router };
