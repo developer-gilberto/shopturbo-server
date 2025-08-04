@@ -1,3 +1,5 @@
+import { IJwtPayload } from "../../user/interfaces/userInterfaces";
+
 export interface IShop {
     shopName: string;
     loggedUser: {
@@ -16,4 +18,22 @@ export interface ISaveShopParams {
     accessToken: string;
     refreshToken: string;
     expireIn: number;
+}
+
+export interface IShopInfo {
+    shopId: number;
+    accessToken: string;
+    shopOwner: IJwtPayload;
+}
+
+export interface IResponseGetShopProfile {
+    message: string;
+    request_id: string;
+    response: {
+        shop_logo: string;
+        description: string;
+        shop_name: string;
+        invoice_issuer: string;
+    };
+    error: string;
 }

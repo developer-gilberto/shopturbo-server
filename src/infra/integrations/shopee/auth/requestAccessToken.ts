@@ -22,7 +22,7 @@ export async function requestShopeeApiAccessToken(
 
         const response: AxiosResponse<IResponseShopeeApiAccessToken> =
             await axios.post(encodeUrl, {
-                code: code,
+                code: code, // válido por 10 minutos
                 shop_id: shopId, // loja que vai conceder a autorizacao ao app
                 partner_id: Number(partnerId), // desenvolvedor do app
             });

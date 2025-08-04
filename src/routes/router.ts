@@ -3,6 +3,7 @@ import * as userController from "../domains/user/controllers";
 import { verifyToken } from "../infra/authorization/verifyJWT";
 import { accessTokenController } from "../domains/accessToken/controllers/accessTokenController";
 import { authUrlController } from "../domains/authorizationUrl/controllers/authUrlController";
+import * as shopController from "../domains/shop/controllers";
 
 const router = Router();
 
@@ -26,6 +27,12 @@ router.post(
     verifyToken,
     // verificar se shopId tem um accessToken valido no db
     // accessTokenController.updateAccessToken
+);
+
+router.get(
+    "/api/shopee/get-shop-profile",
+    verifyToken,
+    shopController.getShopProfile,
 );
 
 export { router };
