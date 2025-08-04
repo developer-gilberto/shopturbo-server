@@ -38,7 +38,7 @@ export async function accessTokenController(
 
         if (!storedToken.data) {
             const response = await shopeeApiAuth.requestShopeeApiAccessToken(
-                safeData.data.code,
+                safeData.data.code, // válido por 10 minutos
                 Number(safeData.data.shop_id),
             );
 
