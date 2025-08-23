@@ -6,10 +6,7 @@ import * as shopeeApiAuth from "../../../infra/integrations/shopee/auth";
 import { AccessTokenRepository } from "../repositories/accessTokenRepository";
 import { getAccessTokenSchema } from "../../accessToken/schemas/getTokenSchema";
 
-export async function accessTokenController(
-    req: ExtendedRequest,
-    res: Response,
-) {
+export async function getAccessToken(req: ExtendedRequest, res: Response) {
     const safeData = getAccessTokenSchema().safeParse(req.query);
 
     if (!safeData.success) {

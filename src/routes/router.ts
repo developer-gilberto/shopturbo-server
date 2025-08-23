@@ -1,7 +1,7 @@
 import { Response, Router } from "express";
 import * as userController from "../domains/user/controllers";
 import { verifyToken } from "../infra/authorization/verifyJWT";
-import { accessTokenController } from "../domains/accessToken/controllers/accessTokenController";
+import * as accessTokenController from "../domains/accessToken/controllers";
 import { authUrlController } from "../domains/authorizationUrl/controllers/authUrlController";
 import * as shopController from "../domains/shop/controllers";
 
@@ -18,19 +18,22 @@ router.get("/ping", verifyToken, (_req, res: Response) => {
 router.post("/signup", userController.signUp);
 router.post("/signin", userController.signIn);
 
-router.get("/api/shopee/get-auth-url", verifyToken, authUrlController);
+router.get("/api/shopee/auth-url", verifyToken, authUrlController);
 
-router.post("/api/shopee/get-access-token", verifyToken, accessTokenController);
-
-router.post(
-    "/api/shopee/update-access-token",
+router.get(
+    "/api/shopee/access-token",
     verifyToken,
-    // verificar se shopId tem um accessToken valido no db
-    // accessTokenController.updateAccessToken
+    accessTokenController.getAccessToken,
+);
+
+router.patch(
+    "/api/shopee/access-token",
+    verifyToken,
+    accessTokenController.updateAccessToken,
 );
 
 router.get(
-    "/api/shopee/get-shop-profile",
+    "/api/shopee/shop/profile",
     verifyToken,
     shopController.getShopProfile,
 );
