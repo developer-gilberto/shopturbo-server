@@ -2,20 +2,23 @@ import cors from "cors";
 import helmet from "helmet";
 import express from "express";
 import { router } from "./routes/router";
+import cookieParser from "cookie-parser";
 
 const server = express();
 
 server.use(express.urlencoded({ extended: true }));
 server.use(express.json());
 server.use(helmet());
+server.use(cookieParser());
 server.use(
     cors({
         origin:
-            process.env.NODE_ENV === "production" || "homolog"
-                ? "https://shopturbo-server.onrender.com"
-                : "*",
-        credentials:
-            process.env.NODE_ENV === "production" || "homolog" ? true : false,
+            process.env.NODE_ENV === "production" ||
+            process.env.NODE_ENV === "homolog"
+                ? process.env.FRONTEND_URL
+                : "http://localhost:3000",
+
+        credentials: true,
     }),
 );
 

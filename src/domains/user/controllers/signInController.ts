@@ -74,10 +74,18 @@ export async function signIn(
             return;
         }
 
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            // sameSite: "none",
+            //maxAge: 30000 // 30s
+            maxAge: 86400000, // 1dia
+        });
+
         res.status(200).json({
             error: false,
             message: "Successful login :)",
-            token,
+            // token,
         });
     } catch (err) {
         console.error(

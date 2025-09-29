@@ -6,7 +6,10 @@ import { IResponseGetShopProfile } from "../interfaces/shopInterfaces";
 
 export async function getShopProfile(req: Request, res: Response) {
     try {
-        const safeData = getShopInfoSchema().safeParse(req.body);
+        const safeData = getShopInfoSchema().safeParse({
+            accessToken: req.cookies.accessToken,
+            shopId: Number(req.cookies.shopId),
+        });
 
         if (!safeData.success) {
             res.status(400).json({
@@ -15,6 +18,8 @@ export async function getShopProfile(req: Request, res: Response) {
             });
             return;
         }
+
+        // preciso verificar se o token ainda eh valido.(acho que um middleware em todas as rotas privadas para verificar se o token ainda eh valido) caso contrario, chamar requestNewAccessToken() ou chamar a rota PATCH /access-token
 
         const partnerId = Number(process.env.PARTNER_ID!);
         const path = process.env.GET_SHOP_PROFILE_PATH!;

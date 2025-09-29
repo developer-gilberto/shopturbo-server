@@ -21,7 +21,7 @@ export async function getAccessToken(req: ExtendedRequest, res: Response) {
         const tokenRepo = new AccessTokenRepository();
 
         const storedToken = await tokenRepo.getTokenByShopId(
-            Number(req.query.shop_id),
+            Number(safeData.data.shop_id),
         );
 
         if (storedToken.error) {
@@ -81,15 +81,22 @@ export async function getAccessToken(req: ExtendedRequest, res: Response) {
                 return;
             }
 
+            res.cookie("accessToken", accessTokenData.data!.accessToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                expires: accessTokenData.data!.expireIn,
+            });
+
+            res.cookie("shopId", accessTokenData.data!.shopId, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                expires: accessTokenData.data!.expireIn,
+            });
+
             res.status(200).json({
                 error: false,
                 message:
-                    "The access token expires in 4 hours and can be used multiple times. If you do not use shopTurbo for more than 30 days, you will need to connect to the Shopee API again to grant authorization to shopTurbo again.",
-                data: {
-                    shopId: accessTokenData.data!.shopId,
-                    accessToken: accessTokenData.data!.accessToken,
-                    expiresAt: accessTokenData.data!.expireIn,
-                },
+                    "The token was successfully obtained and saved in cookies. Send cookies in all API requests by setting the 'credentials: include' in your frontend.",
             });
             return;
         }
@@ -131,15 +138,22 @@ export async function getAccessToken(req: ExtendedRequest, res: Response) {
                 return;
             }
 
+            res.cookie("accessToken", newAccessToken.data?.accessToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                expires: newAccessToken.data!.expireIn,
+            });
+
+            res.cookie("shopId", newAccessToken.data!.shopId, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                expires: newAccessToken.data!.expireIn,
+            });
+
             res.status(200).json({
                 error: false,
                 message:
-                    "The access token expires in 4 hours and can be used multiple times. If you do not use shopTurbo for more than 30 days, you will need to connect to the Shopee API again to grant authorization to shopTurbo again.",
-                data: {
-                    shopId: response.data.shop_id,
-                    accessToken: newAccessToken.data!.accessToken,
-                    expiresAt: newAccessToken.data!.expireIn,
-                },
+                    "The token was successfully obtained and saved in cookies. Send cookies in all API requests by setting the 'credentials: include' in your frontend.",
             });
             return;
         }
@@ -147,12 +161,7 @@ export async function getAccessToken(req: ExtendedRequest, res: Response) {
         res.status(200).json({
             error: false,
             message:
-                "The access token expires in 4 hours and can be used multiple times. If you do not use shopTurbo for more than 30 days, you will need to connect to the Shopee API again to grant authorization to shopTurbo again.",
-            data: {
-                shopId: storedToken.data.shopId,
-                accessToken: storedToken.data.accessToken,
-                expiresAt: storedToken.data.expireIn,
-            },
+                "The token was successfully obtained and saved in cookies. Send cookies in all API requests by setting the 'credentials: include' in your frontend.",
         });
 
         return;
