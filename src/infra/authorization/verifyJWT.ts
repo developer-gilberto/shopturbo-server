@@ -6,12 +6,12 @@ export type ExtendedRequest = Request & {
     loggedUser?: IJwtPayload;
 };
 
-export function verifyToken(
+export function verifyJWT(
     req: ExtendedRequest,
     res: Response,
     next: NextFunction,
 ): void {
-    const token = req.headers.authorization?.split(" ")[1];
+    const token: string = req.cookies.token;
 
     if (!token) {
         res.status(401).json({
@@ -24,7 +24,7 @@ export function verifyToken(
     try {
         jwt.verify(
             token,
-            process.env.JWT_SECRET as string,
+            process.env.JWT_SECRET!,
 
             (error, decode: any) => {
                 if (error) {
