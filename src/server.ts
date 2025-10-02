@@ -12,7 +12,13 @@ server.use(helmet());
 server.use(cookieParser());
 
 server.use((req, res, next) => {
-    console.info("Origin received: ", req.headers.origin);
+    if (
+        process.env.NODE_ENV === "development" ||
+        process.env.NODE_ENV === "homolog"
+    ) {
+        console.info("[ Headers ]: ", req.headers);
+        next();
+    }
     next();
 });
 
