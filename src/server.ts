@@ -10,6 +10,12 @@ server.use(express.urlencoded({ extended: true }));
 server.use(express.json());
 server.use(helmet());
 server.use(cookieParser());
+
+server.use((req, res, next) => {
+    console.info("Origin received: ", req.headers.origin);
+    next();
+});
+
 server.use(
     cors({
         origin:
