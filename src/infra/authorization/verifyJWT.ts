@@ -47,7 +47,7 @@ export function verifyJWT(
                     email: decode.email,
                 };
 
-                next();
+                return next();
             },
         );
     } catch (err) {
@@ -59,5 +59,6 @@ export function verifyJWT(
             error: true,
             message: "Error verifying authentication token.",
         });
+        return;
     }
 }

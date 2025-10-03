@@ -175,5 +175,6 @@ export async function getAccessToken(req: ExtendedRequest, res: Response) {
             message:
                 "An error occurred while trying to get the access token from the Shopee API :(",
         });
+        return;
     }
 }

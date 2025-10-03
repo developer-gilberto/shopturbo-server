@@ -18,6 +18,7 @@ export function authUrlController(_req: Request, res: Response) {
             error: false,
             authorizationUrl: result.authUrl,
         });
+        return;
     } catch (err) {
         console.error(
             "\x1b[1m\x1b[31m[ ERROR ] an error occurred while trying to generate the authorization url: \x1b[0m\n",
@@ -28,5 +29,6 @@ export function authUrlController(_req: Request, res: Response) {
             message:
                 "An error occurred while trying to generate the authorization url :(",
         });
+        return;
     }
 }

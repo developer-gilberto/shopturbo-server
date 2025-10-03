@@ -85,8 +85,8 @@ export async function signIn(
         res.status(200).json({
             error: false,
             message: "Successful login :)",
-            // token,
         });
+        return;
     } catch (err) {
         console.error(
             "\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to login: \x1b[0m\n",
@@ -96,5 +96,6 @@ export async function signIn(
             error: true,
             message: "An error occurred while trying to login :(",
         });
+        return;
     }
 }

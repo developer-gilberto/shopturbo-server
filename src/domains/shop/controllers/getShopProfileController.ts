@@ -44,6 +44,7 @@ export async function getShopProfile(req: Request, res: Response) {
                     error: false,
                     data: response.data.response,
                 });
+                return;
             })
             .catch((error) => {
                 const httpStatusCode = error.status ? error.status : 500;
@@ -53,6 +54,7 @@ export async function getShopProfile(req: Request, res: Response) {
                     message: error.message,
                     data: null,
                 });
+                return;
             });
     } catch (err: any) {
         const error = {
@@ -69,5 +71,6 @@ export async function getShopProfile(req: Request, res: Response) {
             error: true,
             message: "An error occurred while trying to get shop info :(",
         });
+        return;
     }
 }

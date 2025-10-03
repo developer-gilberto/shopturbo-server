@@ -17,9 +17,9 @@ server.use((req, res, next) => {
         process.env.NODE_ENV === "homolog"
     ) {
         console.info("[ Headers ]: ", req.headers);
-        next();
+        return next();
     }
-    next();
+    return next();
 });
 
 server.use(

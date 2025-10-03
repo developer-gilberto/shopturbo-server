@@ -66,6 +66,7 @@ export async function signUp(
             message: "Account created successfully!",
             token,
         });
+        return;
     } catch (err) {
         console.error(
             "\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to create the account: \x1b[0m\n",
@@ -75,5 +76,6 @@ export async function signUp(
             error: true,
             message: "An error occurred while trying to create the account :(",
         });
+        return;
     }
 }
