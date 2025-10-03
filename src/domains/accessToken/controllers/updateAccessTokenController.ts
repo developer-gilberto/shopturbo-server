@@ -45,9 +45,22 @@ export async function updateAccessToken(req: Request, res: Response) {
         return;
     }
 
+    res.cookie("accessToken", newAccessToken.data!.accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        expires: newAccessToken.data!.expireIn,
+    });
+
+    res.cookie("shopId", newAccessToken.data!.shopId, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        expires: newAccessToken.data!.expireIn,
+    });
+
     res.status(200).json({
         error: false,
-        message: "Access token updated successfully.",
-        newAccessToken: newAccessToken.data!.accessToken,
+        message:
+            "The token was successfully refreshed and saved to cookies. Send cookies on all API requests by setting 'credentials: include' on your frontend.",
     });
+    return;
 }
