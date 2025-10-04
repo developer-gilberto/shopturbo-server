@@ -61,10 +61,17 @@ export async function signUp(
             return;
         }
 
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            maxAge: 86400000, // 1dia
+            //maxAge: 30000 // 30s
+            // sameSite: "none",
+        });
+
         res.status(201).json({
             error: false,
-            message: "Account created successfully!",
-            token,
+            message: "Account created successfully :)",
         });
         return;
     } catch (err) {
