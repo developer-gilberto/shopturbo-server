@@ -4,7 +4,10 @@ export async function signOut(_req: Request, res: Response) {
     try {
         res.cookie("token", "", {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
+            secure: process.env.NODE_ENV !== "development",
+            sameSite: "none",
+            path: "/",
+            //maxAge: 30000 // 30s
             maxAge: 0,
         });
 

@@ -11,7 +11,7 @@ server.use(express.json());
 server.use(helmet());
 server.use(cookieParser());
 
-server.use((req, res, next) => {
+server.use((req, _res, next) => {
     if (
         process.env.NODE_ENV === "development" ||
         process.env.NODE_ENV === "homolog"

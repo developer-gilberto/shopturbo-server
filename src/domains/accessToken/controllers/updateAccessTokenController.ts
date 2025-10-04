@@ -47,13 +47,17 @@ export async function updateAccessToken(req: Request, res: Response) {
 
     res.cookie("accessToken", newAccessToken.data!.accessToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: process.env.NODE_ENV !== "development",
+        sameSite: "none",
+        path: "/",
         expires: newAccessToken.data!.expireIn,
     });
 
     res.cookie("shopId", newAccessToken.data!.shopId, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: process.env.NODE_ENV !== "development",
+        sameSite: "none",
+        path: "/",
         expires: newAccessToken.data!.expireIn,
     });
 

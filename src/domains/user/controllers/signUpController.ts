@@ -63,10 +63,11 @@ export async function signUp(
 
         res.cookie("token", token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            maxAge: 86400000, // 1dia
+            secure: process.env.NODE_ENV !== "development",
+            sameSite: "none",
+            path: "/",
             //maxAge: 30000 // 30s
-            // sameSite: "none",
+            maxAge: 86400000, // 1dia
         });
 
         res.status(201).json({

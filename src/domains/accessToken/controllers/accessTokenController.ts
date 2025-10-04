@@ -83,13 +83,17 @@ export async function getAccessToken(req: ExtendedRequest, res: Response) {
 
             res.cookie("accessToken", accessTokenData.data!.accessToken, {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
+                secure: process.env.NODE_ENV !== "development",
+                sameSite: "none",
+                path: "/",
                 expires: accessTokenData.data!.expireIn,
             });
 
             res.cookie("shopId", accessTokenData.data!.shopId, {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
+                secure: process.env.NODE_ENV !== "development",
+                sameSite: "none",
+                path: "/",
                 expires: accessTokenData.data!.expireIn,
             });
 
@@ -140,13 +144,17 @@ export async function getAccessToken(req: ExtendedRequest, res: Response) {
 
             res.cookie("accessToken", newAccessToken.data?.accessToken, {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
+                secure: process.env.NODE_ENV !== "development",
+                sameSite: "none",
+                path: "/",
                 expires: newAccessToken.data!.expireIn,
             });
 
             res.cookie("shopId", newAccessToken.data!.shopId, {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
+                secure: process.env.NODE_ENV !== "development",
+                sameSite: "none",
+                path: "/",
                 expires: newAccessToken.data!.expireIn,
             });
 
