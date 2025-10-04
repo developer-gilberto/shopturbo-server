@@ -76,8 +76,9 @@ export async function signIn(
 
         res.cookie("token", token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            // sameSite: "none",
+            secure: process.env.NODE_ENV !== "development",
+            sameSite: "none",
+            path: "/",
             //maxAge: 30000 // 30s
             maxAge: 86400000, // 1dia
         });
