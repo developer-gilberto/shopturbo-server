@@ -17,6 +17,7 @@ router.get("/ping", verifyJWT, (_req, res: Response) => {
 
 router.post("/signup", userController.signUp);
 router.post("/signin", userController.signIn);
+router.post("/signout", userController.signOut);
 
 router.get("/api/shopee/auth-url", verifyJWT, authUrlController);
 
