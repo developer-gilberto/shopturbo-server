@@ -1,14 +1,14 @@
-import axios, { AxiosResponse } from "axios";
-import { Request, Response } from "express";
-import { generateSignature } from "../../../infra/integrations/shopee/auth/generateSignature";
-import { getShopInfoSchema } from "../schemas/getShopInfoSchema";
-import { IResponseGetShopProfile } from "../interfaces/shopInterfaces";
+import axios, { AxiosResponse } from 'axios';
+import { Request, Response } from 'express';
+import { generateSignature } from '../../../infra/integrations/shopee/auth/generateSignature';
+import { getShopInfoSchema } from '../schemas/getShopInfoSchema';
+import { IResponseGetShopProfile } from '../interfaces/shopInterfaces';
 
 export async function getShopProfile(req: Request, res: Response) {
     try {
         const safeData = getShopInfoSchema().safeParse({
-            accessToken: req.cookies.accessToken,
-            shopId: Number(req.cookies.shopId),
+            accessToken: req.body.accessToken,
+            shopId: Number(req.body.shopId),
         });
 
         if (!safeData.success) {
@@ -63,13 +63,13 @@ export async function getShopProfile(req: Request, res: Response) {
         };
 
         console.error(
-            "\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to get shop info: \x1b[0m\n",
-            error,
+            '\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to get shop info: \x1b[0m\n',
+            error
         );
 
         res.status(500).json({
             error: true,
-            message: "An error occurred while trying to get shop info :(",
+            message: 'An error occurred while trying to get shop info :(',
         });
         return;
     }

@@ -1,6 +1,6 @@
-import jwt from "jsonwebtoken";
-import { Request, Response, NextFunction } from "express";
-import { IJwtPayload } from "../../domains/user/interfaces/userInterfaces";
+import { verify } from 'jsonwebtoken';
+import { Request, Response, NextFunction } from 'express';
+import { IJwtPayload } from '../../domains/user/interfaces/userInterfaces';
 
 export type ExtendedRequest = Request & {
     loggedUser?: IJwtPayload;
@@ -9,20 +9,20 @@ export type ExtendedRequest = Request & {
 export function verifyJWT(
     req: ExtendedRequest,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
 ): void {
-    const token: string = req.cookies.token;
+    const token = req.headers.authorization?.split(' ')[1];
 
     if (!token) {
         res.status(401).json({
             error: true,
-            message: "Access denied :(",
+            message: 'Access denied :(',
         });
         return;
     }
 
     try {
-        jwt.verify(
+        verify(
             token,
             process.env.JWT_SECRET!,
 
@@ -30,12 +30,12 @@ export function verifyJWT(
                 if (error) {
                     console.error(
                         `\x1b[1m\x1b[31m[ ERROR ] ${error.message}: \x1b[0m\n`,
-                        error,
+                        error
                     );
 
                     res.status(401).json({
                         error: true,
-                        message: "Access denied.",
+                        message: 'Access denied.',
                     });
 
                     return;
@@ -48,16 +48,16 @@ export function verifyJWT(
                 };
 
                 return next();
-            },
+            }
         );
     } catch (err) {
         console.error(
             `\x1b[1m\x1b[31m[ ERROR ] Error verifying authentication token: \x1b[0m\n`,
-            err,
+            err
         );
         res.status(500).json({
             error: true,
-            message: "Error verifying authentication token.",
+            message: 'Error verifying authentication token.',
         });
         return;
     }

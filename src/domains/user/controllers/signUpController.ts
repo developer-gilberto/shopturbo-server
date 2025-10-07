@@ -1,12 +1,12 @@
-import { Request, Response } from "express";
-import { signUpSchema } from "../schemas/signUpSchema";
-import { IRequestBody } from "../interfaces/userInterfaces";
-import { UserRepository } from "../repositories/userRepository";
-import { generateJWT } from "../../../infra/authentication/generateJWT";
+import { Request, Response } from 'express';
+import { signUpSchema } from '../schemas/signUpSchema';
+import { IRequestBody } from '../interfaces/userInterfaces';
+import { UserRepository } from '../repositories/userRepository';
+import { generateJWT } from '../../../infra/authentication/generateJWT';
 
 export async function signUp(
     req: Request<{}, {}, IRequestBody>,
-    res: Response,
+    res: Response
 ) {
     try {
         const safeData = signUpSchema().safeParse(req.body);
@@ -27,7 +27,7 @@ export async function signUp(
             res.status(500).json({
                 error: true,
                 message:
-                    "An error occurred while trying to search for a user in the database.",
+                    'An error occurred while trying to search for a user in the database.',
             });
             return;
         }
@@ -35,7 +35,7 @@ export async function signUp(
         if (storedUser.data) {
             res.status(409).json({
                 error: true,
-                message: "Error! Try a different email.",
+                message: 'Error! Try a different email.',
             });
             return;
         }
@@ -45,7 +45,7 @@ export async function signUp(
         if (newUser.error) {
             res.status(500).json({
                 error: true,
-                message: "Error trying to register account in the database.",
+                message: 'Error trying to register account in the database.',
             });
             return;
         }
@@ -56,33 +56,25 @@ export async function signUp(
             res.status(500).json({
                 error: true,
                 message:
-                    "An error occurred while trying to generate the token.",
+                    'An error occurred while trying to generate the token.',
             });
             return;
         }
 
-        res.cookie("token", token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV !== "development",
-            sameSite: "none",
-            path: "/",
-            //maxAge: 30000 // 30s
-            maxAge: 86400000, // 1dia
-        });
-
         res.status(201).json({
             error: false,
-            message: "Account created successfully :)",
+            message: 'Account created successfully :)',
+            token,
         });
         return;
     } catch (err) {
         console.error(
-            "\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to create the account: \x1b[0m\n",
-            err,
+            '\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to create the account: \x1b[0m\n',
+            err
         );
         res.status(500).json({
             error: true,
-            message: "An error occurred while trying to create the account :(",
+            message: 'An error occurred while trying to create the account :(',
         });
         return;
     }

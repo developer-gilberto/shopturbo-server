@@ -1,13 +1,13 @@
-import { Request, Response } from "express";
-import { signInSchema } from "../schemas/signInSchema";
-import { IRequestBody } from "../interfaces/userInterfaces";
-import { UserRepository } from "../repositories/userRepository";
-import { generateJWT } from "../../../infra/authentication/generateJWT";
-import { comparePassword } from "../../../infra/security/comparePassword";
+import { Request, Response } from 'express';
+import { signInSchema } from '../schemas/signInSchema';
+import { IRequestBody } from '../interfaces/userInterfaces';
+import { UserRepository } from '../repositories/userRepository';
+import { generateJWT } from '../../../infra/authentication/generateJWT';
+import { comparePassword } from '../../../infra/security/comparePassword';
 
 export async function signIn(
     req: Request<{}, {}, IRequestBody>,
-    res: Response,
+    res: Response
 ) {
     try {
         const safeData = signInSchema().safeParse(req.body);
@@ -28,7 +28,7 @@ export async function signIn(
             res.status(500).json({
                 error: true,
                 message:
-                    "An error occurred while trying to search for a user in the database.",
+                    'An error occurred while trying to search for a user in the database.',
             });
             return;
         }
@@ -36,21 +36,21 @@ export async function signIn(
         if (!storedUser.data) {
             res.status(401).json({
                 error: true,
-                message: "Incorrect email and/or password. Access denied.",
+                message: 'Incorrect email and/or password. Access denied.',
             });
             return;
         }
 
         const result = await comparePassword(
             safeData.data.password,
-            storedUser.data.password,
+            storedUser.data.password
         );
 
         if (result.error) {
             res.status(500).json({
                 error: true,
                 message:
-                    "An error occurred while trying to check the password.",
+                    'An error occurred while trying to check the password.',
             });
             return;
         }
@@ -58,7 +58,7 @@ export async function signIn(
         if (!result.match) {
             res.status(401).json({
                 error: true,
-                message: "Incorrect email and/or password. Access denied.",
+                message: 'Incorrect email and/or password. Access denied.',
             });
             return;
         }
@@ -69,33 +69,25 @@ export async function signIn(
             res.status(500).json({
                 error: true,
                 message:
-                    "An error occurred while trying to generate the token.",
+                    'An error occurred while trying to generate the token.',
             });
             return;
         }
 
-        res.cookie("token", token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV !== "development",
-            sameSite: "none",
-            path: "/",
-            //maxAge: 30000 // 30s
-            maxAge: 86400000, // 1dia
-        });
-
         res.status(200).json({
             error: false,
-            message: "Successful login :)",
+            message: 'Successful login :)',
+            token,
         });
         return;
     } catch (err) {
         console.error(
-            "\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to login: \x1b[0m\n",
-            err,
+            '\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to login: \x1b[0m\n',
+            err
         );
         res.status(500).json({
             error: true,
-            message: "An error occurred while trying to login :(",
+            message: 'An error occurred while trying to login :(',
         });
         return;
     }
