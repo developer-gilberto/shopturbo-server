@@ -144,8 +144,12 @@ export async function getAccessToken(req: ExtendedRequest, res: Response) {
 
         res.status(200).json({
             error: false,
-            message:
-                "The token was successfully obtained and saved in cookies. Send cookies in all API requests by setting the 'credentials: include' in your frontend.",
+            message: 'Token obtained successfully.',
+            data: {
+                shopId: storedToken.data.shopId,
+                accessToken: storedToken.data.accessToken,
+                expireIn: storedToken.data.expireIn,
+            },
         });
 
         return;

@@ -34,7 +34,7 @@ router.patch(
 );
 
 router.get(
-    '/api/shopee/shop/profile',
+    '/api/shopee/shop/profile/:shop_id',
     verifyJWT,
     shopController.getShopProfile
 );
