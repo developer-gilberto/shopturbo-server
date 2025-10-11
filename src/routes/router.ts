@@ -46,4 +46,10 @@ router.get(
     productController.getProduct
 );
 
+router.get(
+    '/api/shopee/shop/:shop_id/products', // + &offset=0&page_size=100&item_status=NORMAL
+    verifyJWT,
+    productController.getAllProducts
+);
+
 export { router };
