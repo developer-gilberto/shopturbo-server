@@ -4,6 +4,7 @@ import { verifyJWT } from '../infra/authorization/verifyJWT';
 import * as accessTokenController from '../domains/accessToken/controllers';
 import { authUrlController } from '../domains/authorizationUrl/controllers/authUrlController';
 import * as shopController from '../domains/shop/controllers';
+import * as productController from '../domains/products/controllers';
 
 const router = Router();
 
@@ -37,6 +38,12 @@ router.get(
     '/api/shopee/shop/profile/:shop_id',
     verifyJWT,
     shopController.getShopProfile
+);
+
+router.get(
+    '/api/shopee/shop/:shop_id/product/:item_id',
+    verifyJWT,
+    productController.getProduct
 );
 
 export { router };
