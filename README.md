@@ -128,6 +128,32 @@ pnpm build
 pnpm homolog
 ```
 
+## 🌱 Seed
+
+Este seed tem como objetivo criar um usuário de teste no banco de dados para facilitar o desenvolvimento e testes da aplicação, especialmente o login e funcionalidades que dependem de usuários.
+
+1. Execute o seed:
+```bash
+pnpm prisma:seed
+```
+2. O comando irá rodar o arquivo `prisma/seed.ts`, criar o usuário de teste no banco e imprimir logs no console informando o resultado da execução.
+
+3. O usuário criado com o seed possui as seguintes credenciais:
+
+###
+| Campo | Valor               |
+| ----- | ------------------- |
+| Nome  | fakeUser            |
+| Email | teste@shopturbo.com |
+| Senha | 1234                |
+
+4. Use essas credenciais para fazer login na aplicação.
+
+5. Caso queira desfazer o seed, basta executar:
+```bash
+pnpm prisma:reset-seed
+```
+
 ## 🌐 API Endpoints
 
 ### Documentação

@@ -6,11 +6,16 @@
     "scripts": {
         "prisma:generate": "npx prisma generate",
         "prisma:migrate": "npx prisma migrate deploy",
+        "prisma:seed": "npx prisma db seed",
+        "prisma:reset-seed": "tsx prisma/resetSeed.ts",
         "build": "pnpm prisma:generate && tsc",
         "dev": "tsx --inspect --watch --env-file=.env src/server.ts",
         "homolog": "node dist/src/server.js",
         "prod": "node dist/src/server.js",
         "test": "jest"
+    },
+    "prisma": {
+        "seed": "tsx prisma/seed.ts"
     },
     "keywords": [],
     "author": "Gilberto Lopes",
