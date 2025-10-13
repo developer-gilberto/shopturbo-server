@@ -6,56 +6,59 @@ Um servidor backend Node.js para integração com a API oficial da Shopee, forne
 
 O ShopTurbo Server é uma API REST construída em TypeScript que facilita a integração com a API oficial da Shopee. Ele oferece funcionalidades para:
 
-- Gerenciamento de lojas na Shopee (editar, consultar vendas, pedidos, frete, etc...)
-- Gerenciamento de produtos da sua loja na Shopee (editar, postar na loja, consultar lucros, remover da loja, etc...)
-- Autenticação de usuários
-- Integração com Shopee Partner API
-- Gerenciamento de tokens de acesso
+-   Gerenciamento de lojas na Shopee (editar, consultar vendas, pedidos, frete, etc...)
+-   Gerenciamento de produtos da sua loja na Shopee (editar, postar na loja, consultar lucros, remover da loja, etc...)
+-   Autenticação de usuários
+-   Integração com Shopee Partner API
+-   Gerenciamento de tokens de acesso
 
 ## 🚀 Tecnologias
 
-- **Node.js** - Runtime JavaScript
-- **TypeScript** - Superset tipado do JavaScript
-- **Express.js** - Framework web
-- **Prisma** - ORM para banco de dados
-- **PostgreSQL** - Banco de dados relacional
-- **JWT** - Autenticação baseada em tokens
-- **Docker** - Containerização
-- **pnpm** - Gerenciador de pacotes
+-   **Node.js** - Runtime JavaScript
+-   **TypeScript** - Superset tipado do JavaScript
+-   **Express.js** - Framework web
+-   **Prisma** - ORM para banco de dados
+-   **PostgreSQL** - Banco de dados relacional
+-   **JWT** - Autenticação baseada em tokens
+-   **Docker** - Containerização
+-   **pnpm** - Gerenciador de pacotes
 
 ## 📦 Dependências Principais
 
-- `@prisma/client` - Cliente do Prisma ORM
-- `express` - Framework web
-- `jsonwebtoken` - Autenticação JWT
-- `bcryptjs` - Hash de senhas
-- `axios` - Cliente HTTP
-- `zod` - Validação de schemas
-- `helmet` - Middleware de segurança
-- `cors` - Cross-Origin Resource Sharing
+-   `@prisma/client` - Cliente do Prisma ORM
+-   `express` - Framework web
+-   `jsonwebtoken` - Autenticação JWT
+-   `bcryptjs` - Hash de senhas
+-   `axios` - Cliente HTTP
+-   `zod` - Validação de schemas
+-   `helmet` - Middleware de segurança
+-   `cors` - Cross-Origin Resource Sharing
 
 ## 🛠️ Instalação
 
 ### Pré-requisitos
 
-- Node.js 22+
-- pnpm ou gerenciador de pacotes de sua preferência
-- PostgreSQL ou Docker
+-   Node.js 22+
+-   pnpm ou gerenciador de pacotes de sua preferência
+-   PostgreSQL ou Docker
 
 ### Configuração do Ambiente
 
 1. Clone o repositório:
+
 ```bash
 git clone https://github.com/developer-gilberto/shopturbo-server.git
 cd shopturbo-server
 ```
 
 2. Instale as dependências:
+
 ```bash
 pnpm install
 ```
 
 3. Configure as variáveis de ambiente:
+
 ```bash
 cp .env.example .env
 ```
@@ -95,16 +98,19 @@ AUTH_PARTNER_HOST=https://partner.shopeemobile.com
 ### Banco de Dados
 
 1. Inicie o PostgreSQL com Docker:
+
 ```bash
 docker-compose up -d postgres
 ```
 
 2. Execute as migrações:
+
 ```bash
 pnpm prisma:migrate
 ```
 
 3. Gere o cliente Prisma:
+
 ```bash
 pnpm prisma:generate
 ```
@@ -112,17 +118,20 @@ pnpm prisma:generate
 ## 🏃 Execução
 
 ### Desenvolvimento
+
 ```bash
 pnpm dev
 ```
 
 ### Produção
+
 ```bash
 pnpm build
 pnpm prod
 ```
 
 ### Homologação
+
 ```bash
 pnpm build
 pnpm homolog
@@ -133,14 +142,17 @@ pnpm homolog
 Este seed tem como objetivo criar um usuário de teste no banco de dados para facilitar o desenvolvimento e testes da aplicação, especialmente o login e funcionalidades que dependem de usuários.
 
 1. Execute o seed:
+
 ```bash
 pnpm prisma:seed
 ```
+
 2. O comando irá rodar o arquivo `prisma/seed.ts`, criar o usuário de teste no banco e imprimir logs no console informando o resultado da execução.
 
 3. O usuário criado com o seed possui as seguintes credenciais:
 
 ###
+
 | Campo | Valor               |
 | ----- | ------------------- |
 | Nome  | fakeUser            |
@@ -150,6 +162,7 @@ pnpm prisma:seed
 4. Use essas credenciais para fazer login na aplicação.
 
 5. Caso queira desfazer o seed, basta executar:
+
 ```bash
 pnpm prisma:reset-seed
 ```
@@ -158,45 +171,68 @@ pnpm prisma:reset-seed
 
 ### Documentação
 
-| Método | Endpoint | Descrição |
-|--------|----------|-----------|
-| GET | `/docs` | Documentação da API ShopTurbo |
+| Método | Endpoint | Descrição                     |
+| ------ | -------- | ----------------------------- |
+| GET    | `/docs`  | Documentação da API ShopTurbo |
 
 ### Autenticação
 
-| Método | Endpoint | Descrição |
-|--------|----------|-----------|
-| POST | `/signup` | Registrar novo usuário |
-| POST | `/signin` | Login do usuário |
-| POST | `/signout` | Logout do usuário |
-| GET | `/ping` | Verificar autenticação (requer JWT) |
+| Método | Endpoint   | Descrição                           |
+| ------ | ---------- | ----------------------------------- |
+| POST   | `/signup`  | Registrar novo usuário              |
+| POST   | `/signin`  | Login do usuário                    |
+| POST   | `/signout` | Logout do usuário                   |
+| GET    | `/ping`    | Verificar autenticação (requer JWT) |
 
 ### Shopee Integration
 
-| Método | Endpoint | Descrição |
-|--------|----------|-----------|
-| GET | `/api/shopee/auth-url` | Obter URL de autorização |
-| GET | `/api/shopee/access-token` | Obter token de acesso |
-| PATCH | `/api/shopee/access-token` | Atualizar token de acesso |
+| Método | Endpoint                   | Descrição                 |
+| ------ | -------------------------- | ------------------------- |
+| GET    | `/api/shopee/auth-url`     | Obter URL de autorização  |
+| GET    | `/api/shopee/access-token` | Obter token de acesso     |
+| PATCH  | `/api/shopee/access-token` | Atualizar token de acesso |
 
 ### Shop (Loja)
 
-| Método | Endpoint | Descrição |
-|--------|----------|-----------|
-| GET | `/api/shopee/shop/profile/:shop_id` | Obter perfil da loja |
+| Método | Endpoint                            | Descrição            |
+| ------ | ----------------------------------- | -------------------- |
+| GET    | `/api/shopee/shop/profile/:shop_id` | Obter perfil da loja |
 
 ### Produtos
 
-| Método | Endpoint | Descrição |
-|--------|----------|-----------|
-| GET | `/api/shopee/shop/:shop_id/products` | Listar todos os produtos |
-| GET | `/api/shopee/shop/:shop_id/product/:item_id` | Obter produto específico |
+| Método | Endpoint                                     | Descrição                |
+| ------ | -------------------------------------------- | ------------------------ |
+| GET    | `/api/shopee/shop/:shop_id/products`         | Listar todos os produtos |
+| GET    | `/api/shopee/shop/:shop_id/product/:item_id` | Obter produto específico |
 
-### Parâmetros de Query para rota Produtos GET `/api/shopee/shop/:shop_id/products`
+#### \* Parâmetros de Query solicitados para rota Produtos `GET /api/shopee/shop/:shop_id/products`:
 
-- `offset`: Offset para paginação. Se não for passado valor, a api vai usar o valor padrão: 0(zero).
-- `page_size`: Tamanho da página (padrão: 10). Se não for passado valor, a api vai usar o valor padrão: 10(dez)
-- `item_status`: Status do item (NORMAL, BANNED, UNLIST, REVIEWING, SELLER_DELETE, SHOPEE_DELETE)
+-   `offset`: Offset para paginação. Se não for passado valor, a api shopturbo vai usar o valor padrão: 0 (zero).
+-   `page_size`: Tamanho da página. Se não for passado valor, a api shopturbo vai usar o valor padrão: 10 (dez). Valor máximo é 100 (cem).
+-   `item_status`: Status do produto. Deve ser uma das seguintes opções -> "NORMAL", "BANNED", "UNLIST", "REVIEWING", "SELLER_DELETE", "SHOPEE_DELETE".
+
+#### Exemplo de requisição para `GET /api/shopee/shop/:shop_id/products`:
+
+http://localhost:5000/api/shopee/shop/1234/products?offset=0&page_size=100&item_status=NORMAL
+
+## 🔁 Fluxo da aplicação
+
+1. Execute o comando `pnpm prisma:seed` para registrar no banco de dados um usuário.
+
+2. Faça login em `POST /signin` com as credenciais que o comando seed retornou no terminal. A api shopturbo vai retornar um token de autenticação. Este token deve ser enviado no header como Bearer token em todas as requisições para rotas protegidas. `"Authorization": "Bearer token"`.
+
+3. Solicite a url de autorização em `GET /api/shopee/auth-url`. A api shopturbo vai retornar a url de autorização que serve para o usuário conceder autorização para a api consumir os dados da loja Shopee dele. (É necessário ter uma conta de desenvolvedor na Shopee para obter a PARTNER_ID e PARTNER_KEY necessários para gerar a url). Saiba mais em: [Conta de desenvolvedor Shopee](https://open.shopee.com/developer-guide/12)
+
+4. Ao acessar a url de autorização, você vai ser redirecionado para fazer login na Shopee com uma conta de sua loja Shopee. Caso não tenha uma conta de vendedor na Shopee, use as credenciais dessa loja Shopee que eu criei para fins de testes -> Conta: SANDBOX.e7fcbe2b7aa4184988be, senha: d44cf0bd42e6da27
+
+5. Após conceder a autorização para a api shopturbo, você vai ser redirecionado para rota de callback(redirect_url). A Shopee vai enviar 2 parâmetros de query na url: code e shop_id. Eles serão usados para solicitar o token de acesso da api da Shopee. Exemplo -> `/callback?code=1234&shop_id=1234`.
+
+6. Agora, solicite o token de acesso da api da Shopee em `GET /api/shopee/access-token?code=1234&shop_id=1234`. A api shopturbo vai salvar o token de acesso no banco de dados e vai te retornar somente o shopId.
+
+7. E pronto, agora basta enviar o shopId como parâmetro de rota nas rotas que esperam por um parâmetro :shop_id.
+   Exemplo -> `GET /api/shopee/shop/:shop_id/product/:item_id`.
+
+8. Se ficou com alguma dúvida, estou à disposição através dos links no final desta documentação.
 
 ## 🏗️ Arquitetura
 
@@ -223,28 +259,31 @@ src/
 ## 📊 Modelo de Dados
 
 ### User
-- `id`: Identificador único
-- `name`: Nome do usuário
-- `email`: Email único
-- `password`: Senha criptografada
-- `createdAt`: Data de criação
-- `updatedAt`: Data de atualização
+
+-   `id`: Identificador único
+-   `name`: Nome do usuário
+-   `email`: Email único
+-   `password`: Senha criptografada
+-   `createdAt`: Data de criação
+-   `updatedAt`: Data de atualização
 
 ### Shop
-- `id`: Identificador da loja (Shopee Shop ID)
-- `userId`: Referência ao usuário dono da loja
-- `name`: Nome da loja
-- `createdAt`: Data de criação
-- `updatedAt`: Data de atualização
+
+-   `id`: Identificador da loja (Shopee Shop ID)
+-   `userId`: Referência ao usuário dono da loja
+-   `name`: Nome da loja
+-   `createdAt`: Data de criação
+-   `updatedAt`: Data de atualização
 
 ### ShopeeAccessToken
-- `id`: Identificador único
-- `shopId`: Referência à loja
-- `refreshToken`: Token de renovação (válido por 30 dias)
-- `accessToken`: Token de acesso (válido por 4h)
-- `expireIn`: Data de expiração
-- `createdAt`: Data de criação
-- `updatedAt`: Data de atualização
+
+-   `id`: Identificador único
+-   `shopId`: Referência à loja
+-   `refreshToken`: Token de renovação (válido por 30 dias)
+-   `accessToken`: Token de acesso (válido por 4h)
+-   `expireIn`: Data de expiração
+-   `createdAt`: Data de criação
+-   `updatedAt`: Data de atualização
 
 ## 🔐 Autenticação
 
@@ -257,20 +296,20 @@ O sistema utiliza JWT (JSON Web Tokens) para autenticação:
 
 ## 🛡️ Segurança
 
-- **Helmet**: Configurações de segurança HTTP
-- **CORS**: Controle de origem cruzada
-- **bcryptjs**: Hash seguro de senhas
-- **JWT**: Tokens seguros para autenticação
-- **Zod**: Validação rigorosa de dados de entrada
+-   **Helmet**: Configurações de segurança HTTP
+-   **CORS**: Controle de origem cruzada
+-   **bcryptjs**: Hash seguro de senhas
+-   **JWT**: Tokens seguros para autenticação
+-   **Zod**: Validação rigorosa de dados de entrada
 
 ## 📝 Scripts Disponíveis
 
-- `pnpm dev`: Executa em modo desenvolvimento com hot-reload e inicia debugger no chrome
-- `pnpm build`: Compila o TypeScript para JavaScript
-- `pnpm prod`: Executa em modo produção
-- `pnpm homolog`: Executa em modo homologação
-- `pnpm prisma:generate`: Gera o cliente Prisma
-- `pnpm prisma:migrate`: Executa migrações do banco
+-   `pnpm dev`: Executa em modo desenvolvimento com hot-reload e inicia debugger no chrome
+-   `pnpm build`: Compila o TypeScript para JavaScript
+-   `pnpm prod`: Executa em modo produção
+-   `pnpm homolog`: Executa em modo homologação
+-   `pnpm prisma:generate`: Gera o cliente Prisma
+-   `pnpm prisma:migrate`: Executa migrações do banco
 
 ## 🐳 Docker
 
@@ -282,14 +321,27 @@ docker-compose up
 
 ## 🚦 HTTP Status Codes
 
-- `200`: Sucesso
-- `200`: Recurso criado
-- `400`: Dados inválidos
-- `401`: Não autorizado
-- `403`: Acesso negado
-- `404`: Recurso não encontrado
-- `409`: Conflito de dados
-- `500`: Erro interno do servidor
+-   `200`: Sucesso
+-   `200`: Recurso criado
+-   `400`: Dados inválidos
+-   `401`: Não autorizado
+-   `403`: Acesso negado
+-   `404`: Recurso não encontrado
+-   `409`: Conflito de dados
+-   `500`: Erro interno do servidor
+
+## 🐞 Bugs
+
+Se você encontrou algum problema ou comportamento inesperado no projeto, por favor, ajude a tornar este projeto melhor, reportando o problema ao desenvolvedor:
+
+Ao reportar, inclua:
+
+-   Passos para reproduzir o bug
+-   O que você esperava que acontecesse
+-   O que realmente aconteceu
+-   Logs ou prints se possível
+
+👉 [Reportar bug ao desenvolvedor](https://github.com/developer-gilberto/shopturbo-server/issues/new)
 
 ## 🧑‍💻 Desenvolvedor
 
@@ -297,6 +349,6 @@ Feito com muito ❤️ por **Gilberto Lopes** Full Stack Developer.
 
 ### Saiba mais sobre o desenvolvedor
 
-- [gilbertolopes.dev](https://gilbertolopes.dev)
-- [GitHub](https://github.com/developer-gilberto)
-- [Instagran](https://www.instagram.com/developer.gilberto/)
+-   [gilbertolopes.dev](https://gilbertolopes.dev)
+-   [GitHub](https://github.com/developer-gilberto)
+-   [Instagran](https://www.instagram.com/developer.gilberto/)
