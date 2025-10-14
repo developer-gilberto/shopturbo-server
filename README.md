@@ -194,26 +194,36 @@ pnpm prisma:reset-seed
 
 ### Shop (Loja)
 
-| Método | Endpoint                            | Descrição            |
-| ------ | ----------------------------------- | -------------------- |
-| GET    | `/api/shopee/shop/profile/:shop_id` | Obter perfil da loja |
+| Método | Endpoint                            | Descrição                     |
+| ------ | ----------------------------------- | ----------------------------- |
+| GET    | `/api/shopee/shop/profile/:shop_id` | Obter dados do perfil da loja |
 
 ### Produtos
 
-| Método | Endpoint                                     | Descrição                |
-| ------ | -------------------------------------------- | ------------------------ |
-| GET    | `/api/shopee/shop/:shop_id/products`         | Listar todos os produtos |
-| GET    | `/api/shopee/shop/:shop_id/product/:item_id` | Obter produto específico |
+| Método | Endpoint                                       | Descrição                      |
+| ------ | ---------------------------------------------- | ------------------------------ |
+| GET    | `/api/shopee/shop/:shop_id/products/id-list`   | Obter IDs dos produtos         |
+| GET    | `/api/shopee/shop/:shop_id/products/full-info` | Obter informações dos produtos |
 
-#### \* Parâmetros de Query solicitados para rota Produtos `GET /api/shopee/shop/:shop_id/products`:
+#### \* Parâmetros da rota Produtos -> `GET /api/shopee/shop/:shop_id/products/id-list`:
 
--   `offset`: Offset para paginação. Se não for passado valor, a api shopturbo vai usar o valor padrão: 0 (zero).
--   `page_size`: Tamanho da página. Se não for passado valor, a api shopturbo vai usar o valor padrão: 10 (dez). Valor máximo é 100 (cem).
--   `item_status`: Status do produto. Deve ser uma das seguintes opções -> "NORMAL", "BANNED", "UNLIST", "REVIEWING", "SELLER_DELETE", "SHOPEE_DELETE".
+-   `shop_id`: Parâmetro de rota. ID da loja que deseja consultar.
+-   `offset`: Parâmetro de consulta. Offset para paginação. Se não for passado valor, a api shopturbo vai usar o valor padrão: 0 (zero).
+-   `page_size`: Parâmetro de consulta. Tamanho da página. Se não for passado valor, a api shopturbo vai usar o valor padrão: 10 (dez). Valor máximo é 100 (cem).
+-   `item_status`: Parâmetro de consulta. Status do produto. Deve ser uma das seguintes opções -> "NORMAL", "BANNED", "UNLIST", "REVIEWING", "SELLER_DELETE", "SHOPEE_DELETE".
 
-#### Exemplo de requisição para `GET /api/shopee/shop/:shop_id/products`:
+#### Exemplo de requisição para rota Produtos `GET /api/shopee/shop/:shop_id/products/id-list`:
 
-http://localhost:5000/api/shopee/shop/1234/products?offset=0&page_size=100&item_status=NORMAL
+**http://localhost:5000/api/shopee/shop/1234/products/id-list?offset=0&page_size=100&item_status=NORMAL**
+
+#### \* Parâmetros da rota Produtos -> `GET /api/shopee/shop/:shop_id/products/full-info`:
+
+-   `shop_id`: Parâmetro de rota. ID da loja que deseja consultar.
+-   `item_id_list`: Parâmetro de consulta. Pode ser o ID de um único produto específico ou um array com o ID dos produtos que deseja consultar (Máximo 50 IDs por requisição).
+
+#### Exemplo de requisição para rota Produtos `GET /api/shopee/shop/:shop_id/products/full-info`:
+
+**http://localhost:5000/api/shopee/shop/1234/products/full-info?item_id_list=892607435,885174198,875174199**
 
 ## 🔁 Fluxo da aplicação
 
@@ -230,7 +240,7 @@ http://localhost:5000/api/shopee/shop/1234/products?offset=0&page_size=100&item_
 6. Agora, solicite o token de acesso da api da Shopee em `GET /api/shopee/access-token?code=1234&shop_id=1234`. A api shopturbo vai salvar o token de acesso no banco de dados e vai te retornar somente o shopId.
 
 7. E pronto, agora basta enviar o shopId como parâmetro de rota nas rotas que esperam por um parâmetro :shop_id.
-   Exemplo -> `GET /api/shopee/shop/:shop_id/product/:item_id`.
+   Exemplo -> `GET /api/shopee/shop/:shop_id/products/full-info`.
 
 8. Se ficou com alguma dúvida, estou à disposição através dos links no final desta documentação.
 
@@ -243,6 +253,7 @@ src/
 ├── domains/              # Lógica de negócio por domínio
 │   ├── accessToken/      # Gerenciamento de tokens
 │   ├── authorizationUrl/ # URLs de autorização
+│   ├── docs/             # Documentação
 │   ├── products/         # Produtos
 │   ├── shop/            # Lojas
 │   ├── shopeePartner/   # Integração Shopee
