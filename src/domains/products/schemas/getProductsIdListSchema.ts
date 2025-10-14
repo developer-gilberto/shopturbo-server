@@ -1,6 +1,6 @@
 import z from 'zod';
 
-export function getAllProductsSchema() {
+export function getProductsIdListSchema() {
     return z.object({
         shopId: z.number().int().positive(),
         offset: z.number().int().min(0),

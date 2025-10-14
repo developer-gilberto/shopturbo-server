@@ -2,15 +2,15 @@ import axios, { AxiosResponse } from 'axios';
 import { Response } from 'express';
 import { generateSignature } from '../../../infra/integrations/shopee/auth/generateSignature';
 import { ExtendedReq } from '../interfaces/productsInterfaces';
-import { getAllProductsSchema } from '../schemas/getAllProductsSchema';
+import { getProductsIdListSchema } from '../schemas/getProductsIdListSchema';
 import { AccessTokenRepository } from '../../accessToken/repositories/accessTokenRepository';
 
-export async function getAllProducts(req: ExtendedReq, res: Response) {
+export async function getProductsIdList(req: ExtendedReq, res: Response) {
     try {
         const { shop_id } = req.params;
         const { offset = 0, page_size = 10, item_status } = req.query;
 
-        const safeData = getAllProductsSchema().safeParse({
+        const safeData = getProductsIdListSchema().safeParse({
             shopId: Number(shop_id),
             offset: Number(offset),
             pageSize: Number(page_size),

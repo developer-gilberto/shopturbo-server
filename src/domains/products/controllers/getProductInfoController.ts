@@ -2,16 +2,14 @@ import axios, { AxiosResponse } from 'axios';
 import { Response } from 'express';
 import { generateSignature } from '../../../infra/integrations/shopee/auth/generateSignature';
 import { ExtendedReq } from '../interfaces/productsInterfaces';
-import { getProductSchema } from '../schemas/getProductSchema';
+import { getProductInfoSchema } from '../schemas/getProductInfoSchema';
 import { AccessTokenRepository } from '../../accessToken/repositories/accessTokenRepository';
 
-export async function getProduct(req: ExtendedReq, res: Response) {
+export async function getProductsInfo(req: ExtendedReq, res: Response) {
     try {
-        const { shop_id, item_id } = req.params;
-
-        const safeData = getProductSchema().safeParse({
-            shopId: Number(shop_id),
-            itemId: Number(item_id),
+        const safeData = getProductInfoSchema().safeParse({
+            shopId: Number(req.params.shop_id),
+            itemIdList: req.query.item_id_list,
         });
 
         if (!safeData.success) {
@@ -60,7 +58,8 @@ export async function getProduct(req: ExtendedReq, res: Response) {
 
         const host = process.env.AUTH_PARTNER_HOST!;
 
-        const itemIdList = [Number(safeData.data.itemId)]; // pode ser um array -> [34001,34002]
+        // itemIdList -> pode ser um number com o id de um único produto ou um array de numbers com o id de ate 50 produtos
+        const itemIdList = safeData.data.itemIdList;
 
         const url = `${host}${path}?partner_id=${partnerId}&sign=${sign}&timestamp=${timestamp}&shop_id=${shopId}&access_token=${accessToken}&item_id_list=${itemIdList}&need_tax_info=true&need_complaint_policy=true`;
         // need_tax_info=true&need_complaint_policy=true -> são opcionais!!!
