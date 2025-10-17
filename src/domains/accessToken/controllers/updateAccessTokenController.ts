@@ -1,7 +1,7 @@
-import { Request, Response } from 'express';
-import { updateAccessTokenSchema } from '../schemas/updateTokenSchema';
-import * as shopeeApiAuth from '../../../infra/integrations/shopee/auth';
-import { AccessTokenRepository } from '../repositories/accessTokenRepository';
+import { Request, Response } from "express";
+import { updateAccessTokenSchema } from "../schemas/updateTokenSchema";
+import * as shopeeApiAuth from "../../../infra/integrations/shopee/auth";
+import { AccessTokenRepository } from "../repositories/accessTokenRepository";
 
 export async function updateAccessToken(req: Request, res: Response) {
     const safeData = updateAccessTokenSchema().safeParse(req.body);
@@ -16,7 +16,7 @@ export async function updateAccessToken(req: Request, res: Response) {
 
     const response = await shopeeApiAuth.requestNewShopeeApiAccessToken(
         Number(safeData.data.shopId),
-        safeData.data.refreshToken
+        safeData.data.refreshToken,
     );
 
     if (response.error) {
@@ -40,18 +40,16 @@ export async function updateAccessToken(req: Request, res: Response) {
         res.status(500).json({
             error: true,
             message:
-                'An error occurred while trying to update the accessToken :(',
+                "An error occurred while trying to update the accessToken :(",
         });
         return;
     }
 
     res.status(200).json({
         error: false,
-        message: 'Token updated successfully.',
+        message: "Token updated successfully.",
         data: {
             shopId: newAccessToken.data?.shopId,
-            accessToken: newAccessToken.data?.accessToken,
-            expireIn: newAccessToken.data?.expireIn,
         },
     });
     return;

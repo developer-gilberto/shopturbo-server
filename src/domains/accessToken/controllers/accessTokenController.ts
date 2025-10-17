@@ -1,10 +1,10 @@
-import { Response } from 'express';
-import * as tokenService from '../services';
-import { ExtendedRequest } from '../../user/interfaces/userInterfaces';
-import { ShopRepository } from '../../shop/repositories/shopRepository';
-import * as shopeeApiAuth from '../../../infra/integrations/shopee/auth';
-import { AccessTokenRepository } from '../repositories/accessTokenRepository';
-import { getAccessTokenSchema } from '../../accessToken/schemas/getTokenSchema';
+import { Response } from "express";
+import * as tokenService from "../services";
+import { ExtendedRequest } from "../../user/interfaces/userInterfaces";
+import { ShopRepository } from "../../shop/repositories/shopRepository";
+import * as shopeeApiAuth from "../../../infra/integrations/shopee/auth";
+import { AccessTokenRepository } from "../repositories/accessTokenRepository";
+import { getAccessTokenSchema } from "../../accessToken/schemas/getTokenSchema";
 
 export async function getAccessToken(req: ExtendedRequest, res: Response) {
     const safeData = getAccessTokenSchema().safeParse(req.query);
@@ -21,14 +21,14 @@ export async function getAccessToken(req: ExtendedRequest, res: Response) {
         const tokenRepo = new AccessTokenRepository();
 
         const storedToken = await tokenRepo.getTokenByShopId(
-            Number(safeData.data.shop_id)
+            Number(safeData.data.shop_id),
         );
 
         if (storedToken.error) {
             res.status(500).json({
                 error: true,
                 message:
-                    'An error occurred while trying to search for the accessToken in the database.',
+                    "An error occurred while trying to search for the accessToken in the database.",
             });
             return;
         }
@@ -36,14 +36,14 @@ export async function getAccessToken(req: ExtendedRequest, res: Response) {
         if (!storedToken.data) {
             const response = await shopeeApiAuth.requestShopeeApiAccessToken(
                 safeData.data.code, // válido por 10 minutos
-                Number(safeData.data.shop_id)
+                Number(safeData.data.shop_id),
             );
 
             if (response.error) {
                 res.status(500).json({
                     error: true,
                     message:
-                        'An error occurred while trying to get the accessToken from the Shopee API. ' +
+                        "An error occurred while trying to get the accessToken from the Shopee API. " +
                         response.data.message,
                 });
                 return;
@@ -53,62 +53,77 @@ export async function getAccessToken(req: ExtendedRequest, res: Response) {
 
             const newShop = await shopRepo.save(
                 Number(safeData.data.shop_id),
-                Number(req.loggedUser!.id)
+                Number(req.loggedUser!.id),
             );
 
             if (newShop.error) {
                 res.status(500).json({
                     error: true,
                     message:
-                        'An error occurred while trying to save the shop to the DB. ',
+                        "An error occurred while trying to save the shop to the DB. ",
+                });
+                return;
+            }
+
+            // atualiza o accessToken para versao definitiva antes de salvar.
+            // porque o primeiro accessToken eh temporario.
+            const result = await shopeeApiAuth.requestNewShopeeApiAccessToken(
+                Number(safeData.data.shop_id),
+                response.data.refresh_token!,
+            );
+
+            if (result.error) {
+                res.status(500).json({
+                    error: true,
+                    message:
+                        "An error occurred while trying to update accessToken from the Shopee API. " +
+                        result.data.message,
                 });
                 return;
             }
 
             const accessTokenData = await tokenRepo.save({
-                shopId: Number(newShop.data!.id),
-                refreshToken: response.data.refresh_token!,
-                accessToken: response.data.access_token!,
-                expireIn: response.data.expire_in!,
+                shopId: result.data.shop_id!,
+                refreshToken: result.data.refresh_token!,
+                accessToken: result.data.access_token!,
+                expireIn: result.data.expire_in!,
             });
 
             if (accessTokenData.error) {
                 res.status(500).json({
                     error: true,
                     message:
-                        'An error occurred while trying to save the accessToken to the database',
+                        "An error occurred while trying to save the accessToken to the database",
                 });
                 return;
             }
 
             res.status(200).json({
                 error: false,
-                message: 'Token obtained successfully.',
+                message: "Token obtained successfully.",
                 data: {
                     shopId: accessTokenData.data?.shopId,
-                    accessToken: accessTokenData.data?.accessToken,
-                    expireIn: accessTokenData.data?.expireIn,
                 },
             });
             return;
         }
 
         const expiredToken = tokenService.checksIfTokenHasExpired(
-            storedToken.data.expireIn
-            // new Date("1999-12-31T00:00:00.000Z"),// <- teste token expirado
+            storedToken.data.expireIn,
+            // new Date("1999-12-31T00:00:00.000Z"), // <- teste token expirado
         );
 
         if (expiredToken) {
             const response = await shopeeApiAuth.requestNewShopeeApiAccessToken(
                 Number(safeData.data.shop_id),
-                storedToken.data.refreshToken
+                storedToken.data.refreshToken,
             );
 
             if (response.error) {
                 res.status(500).json({
                     error: true,
                     message:
-                        'An error occurred while trying to get the newAccessToken from the Shopee API. ' +
+                        "An error occurred while trying to get the newAccessToken from the Shopee API. " +
                         response.data.message,
                 });
                 return;
@@ -125,18 +140,17 @@ export async function getAccessToken(req: ExtendedRequest, res: Response) {
                 res.status(500).json({
                     error: true,
                     message:
-                        'An error occurred while trying to update the accessToken :(',
+                        "An error occurred while trying to update the accessToken :(",
                 });
                 return;
             }
 
             res.status(200).json({
                 error: false,
-                message: 'Token obtained successfully.',
+                message:
+                    "Access token updated. New access token successfully obtained.",
                 data: {
                     shopId: newAccessToken.data?.shopId,
-                    accessToken: newAccessToken.data?.accessToken,
-                    expireIn: newAccessToken.data?.expireIn,
                 },
             });
             return;
@@ -144,24 +158,22 @@ export async function getAccessToken(req: ExtendedRequest, res: Response) {
 
         res.status(200).json({
             error: false,
-            message: 'Token obtained successfully.',
+            message: "Token obtained successfully!",
             data: {
                 shopId: storedToken.data.shopId,
-                accessToken: storedToken.data.accessToken,
-                expireIn: storedToken.data.expireIn,
             },
         });
 
         return;
     } catch (err) {
         console.error(
-            '\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to get the access_token: \x1b[0m\n',
-            err
+            "\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to get the access_token: \x1b[0m\n",
+            err,
         );
         res.status(500).json({
             error: true,
             message:
-                'An error occurred while trying to get the access token from the Shopee API :(',
+                "An error occurred while trying to get the access token from the Shopee API :(",
         });
         return;
     }
