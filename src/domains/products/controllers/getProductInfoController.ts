@@ -1,9 +1,9 @@
-import axios, { AxiosResponse } from 'axios';
-import { Response } from 'express';
-import { generateSignature } from '../../../infra/integrations/shopee/auth/generateSignature';
-import { ExtendedReq } from '../interfaces/productsInterfaces';
-import { getProductInfoSchema } from '../schemas/getProductInfoSchema';
-import { AccessTokenRepository } from '../../accessToken/repositories/accessTokenRepository';
+import axios, { AxiosResponse } from "axios";
+import { Response } from "express";
+import { generateSignature } from "../../../infra/integrations/shopee/auth/generateSignature";
+import { ExtendedReq } from "../interfaces/productsInterfaces";
+import { getProductInfoSchema } from "../schemas/getProductInfoSchema";
+import { getValidAccessToken } from "../../accessToken/services/getValidAccessToken";
 
 export async function getProductsInfo(req: ExtendedReq, res: Response) {
     try {
@@ -20,35 +20,21 @@ export async function getProductsInfo(req: ExtendedReq, res: Response) {
             return;
         }
 
-        const tokenRepo = new AccessTokenRepository();
+        const validTokenData = await getValidAccessToken(safeData.data.shopId);
 
-        const accessTokenData = await tokenRepo.getTokenByShopId(
-            safeData.data.shopId
-        );
-
-        if (accessTokenData.error) {
+        if (validTokenData.error) {
             res.status(500).json({
                 error: true,
                 message:
-                    'An error occurred while trying to search for the accessToken in the database.',
+                    "An error occurred while trying to get the validToken.",
             });
             return;
         }
-
-        if (!accessTokenData.data) {
-            res.status(404).json({
-                error: true,
-                message: 'AccessToken not found.',
-            });
-            return;
-        }
-
-        // preciso verificar se o token ainda eh valido.(acho que um middleware em todas as rotas privadas para verificar se o token ainda eh valido) caso contrario, chamar requestNewAccessToken() ou chamar a rota PATCH /access-token
 
         const partnerId = Number(process.env.PARTNER_ID!);
         const path = process.env.GET_ITEM_BASE_INFO_PATH!;
         const timestamp = Math.floor(Date.now() / 1000);
-        const accessToken = accessTokenData.data.accessToken;
+        const accessToken = validTokenData.data?.accessToken;
 
         const shopId = Number(safeData.data.shopId);
 
@@ -84,8 +70,8 @@ export async function getProductsInfo(req: ExtendedReq, res: Response) {
                 };
 
                 console.error(
-                    '\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to get_item_base_info: \x1b[0m\n',
-                    error
+                    "\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to get_item_base_info: \x1b[0m\n",
+                    error,
                 );
 
                 res.status(httpStatusCode).json({
@@ -102,13 +88,13 @@ export async function getProductsInfo(req: ExtendedReq, res: Response) {
         };
 
         console.error(
-            '\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to get_item_base_info: \x1b[0m\n',
-            error
+            "\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to get_item_base_info: \x1b[0m\n",
+            error,
         );
 
         res.status(500).json({
             error: true,
-            message: 'An error occurred while trying to get_item_base_info :(',
+            message: "An error occurred while trying to get_item_base_info :(",
         });
         return;
     }

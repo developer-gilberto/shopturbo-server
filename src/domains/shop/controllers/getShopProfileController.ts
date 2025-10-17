@@ -1,18 +1,16 @@
-import axios, { AxiosResponse } from 'axios';
-import { Request, Response } from 'express';
-import { generateSignature } from '../../../infra/integrations/shopee/auth/generateSignature';
-import { IResponseGetShopProfile } from '../interfaces/shopInterfaces';
-import { AccessTokenRepository } from '../../accessToken/repositories/accessTokenRepository';
-import { getShopInfoSchema } from '../schemas/getShopInfoSchema';
+import axios, { AxiosResponse } from "axios";
+import { Request, Response } from "express";
+import { generateSignature } from "../../../infra/integrations/shopee/auth/generateSignature";
+import { IResponseGetShopProfile } from "../interfaces/shopInterfaces";
+import { getShopInfoSchema } from "../schemas/getShopInfoSchema";
+import { getValidAccessToken } from "../../accessToken/services";
 
 export async function getShopProfile(
     req: Request<{ shop_id: string }>,
-    res: Response
+    res: Response,
 ) {
     try {
         const { shop_id } = req.params;
-
-        const tokenRepo = new AccessTokenRepository();
 
         const safeData = getShopInfoSchema().safeParse({
             shopId: Number(shop_id),
@@ -26,33 +24,21 @@ export async function getShopProfile(
             return;
         }
 
-        const accessTokenData = await tokenRepo.getTokenByShopId(
-            Number(shop_id)
-        );
+        const validTokenData = await getValidAccessToken(safeData.data.shopId);
 
-        if (accessTokenData.error) {
+        if (validTokenData.error) {
             res.status(500).json({
                 error: true,
                 message:
-                    'An error occurred while trying to search for the accessToken in the database.',
+                    "An error occurred while trying to get the validToken.",
             });
             return;
         }
-
-        if (!accessTokenData.data) {
-            res.status(404).json({
-                error: true,
-                message: 'AccessToken not found.',
-            });
-            return;
-        }
-
-        // preciso verificar se o token ainda eh valido.(acho que um middleware em todas as rotas privadas para verificar se o token ainda eh valido) caso contrario, chamar requestNewAccessToken() ou chamar a rota PATCH /access-token
 
         const partnerId = Number(process.env.PARTNER_ID!);
         const path = process.env.GET_SHOP_PROFILE_PATH!;
         const timestamp = Math.floor(Date.now() / 1000);
-        const accessToken = accessTokenData.data.accessToken;
+        const accessToken = validTokenData.data!.accessToken;
         const shopId = Number(shop_id);
 
         const baseString = partnerId + path + timestamp + accessToken + shopId;
@@ -91,13 +77,13 @@ export async function getShopProfile(
         };
 
         console.error(
-            '\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to get shop info: \x1b[0m\n',
-            error
+            "\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to get shop info: \x1b[0m\n",
+            error,
         );
 
         res.status(500).json({
             error: true,
-            message: 'An error occurred while trying to get shop info :(',
+            message: "An error occurred while trying to get shop info :(",
         });
         return;
     }

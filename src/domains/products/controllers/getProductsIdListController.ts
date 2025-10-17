@@ -1,9 +1,9 @@
-import axios, { AxiosResponse } from 'axios';
-import { Response } from 'express';
-import { generateSignature } from '../../../infra/integrations/shopee/auth/generateSignature';
-import { ExtendedReq } from '../interfaces/productsInterfaces';
-import { getProductsIdListSchema } from '../schemas/getProductsIdListSchema';
-import { AccessTokenRepository } from '../../accessToken/repositories/accessTokenRepository';
+import axios, { AxiosResponse } from "axios";
+import { Response } from "express";
+import { generateSignature } from "../../../infra/integrations/shopee/auth/generateSignature";
+import { ExtendedReq } from "../interfaces/productsInterfaces";
+import { getProductsIdListSchema } from "../schemas/getProductsIdListSchema";
+import { getValidAccessToken } from "../../accessToken/services";
 
 export async function getProductsIdList(req: ExtendedReq, res: Response) {
     try {
@@ -25,25 +25,13 @@ export async function getProductsIdList(req: ExtendedReq, res: Response) {
             return;
         }
 
-        const tokenRepo = new AccessTokenRepository();
+        const validTokenData = await getValidAccessToken(safeData.data.shopId);
 
-        const accessTokenData = await tokenRepo.getTokenByShopId(
-            safeData.data.shopId
-        );
-
-        if (accessTokenData.error) {
+        if (validTokenData.error) {
             res.status(500).json({
                 error: true,
                 message:
-                    'An error occurred while trying to search for the accessToken in the database.',
-            });
-            return;
-        }
-
-        if (!accessTokenData.data) {
-            res.status(404).json({
-                error: true,
-                message: 'AccessToken not found.',
+                    "An error occurred while trying to get the validToken.",
             });
             return;
         }
@@ -51,7 +39,7 @@ export async function getProductsIdList(req: ExtendedReq, res: Response) {
         const partnerId = Number(process.env.PARTNER_ID!);
         const path = process.env.GET_ITEM_LIST_PATH!;
         const timestamp = Math.floor(Date.now() / 1000);
-        const accessToken = accessTokenData.data.accessToken;
+        const accessToken = validTokenData.data!.accessToken;
         const shopId = safeData.data.shopId;
 
         const baseString = partnerId + path + timestamp + accessToken + shopId;
@@ -63,7 +51,7 @@ export async function getProductsIdList(req: ExtendedReq, res: Response) {
         const url = `${host}${path}?partner_id=${partnerId}&sign=${sign}&timestamp=${timestamp}&access_token=${accessToken}&shop_id=${shopId}&offset=${
             safeData.data.offset
         }&page_size=${safeData.data.pageSize}&item_status=${encodeURIComponent(
-            safeData.data.itemStatus
+            safeData.data.itemStatus,
         )}`;
 
         const encodeUrl = encodeURI(url);
@@ -80,8 +68,8 @@ export async function getProductsIdList(req: ExtendedReq, res: Response) {
                 const httpStatusCode = err.response?.status || 500;
 
                 console.error(
-                    '\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to get_item_list: \x1b[0m\n',
-                    err
+                    "\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to get_item_list: \x1b[0m\n",
+                    err,
                 );
 
                 res.status(httpStatusCode).json({
@@ -97,13 +85,13 @@ export async function getProductsIdList(req: ExtendedReq, res: Response) {
         };
 
         console.error(
-            '\x1b[1m\x1b[31m[ ERROR ] An unexpected error occurred while trying to get_item_list: \x1b[0m\n',
-            error
+            "\x1b[1m\x1b[31m[ ERROR ] An unexpected error occurred while trying to get_item_list: \x1b[0m\n",
+            error,
         );
 
         res.status(500).json({
             error: true,
-            message: 'An error occurred while trying to get_item_list :(',
+            message: "An error occurred while trying to get_item_list :(",
         });
     }
 }

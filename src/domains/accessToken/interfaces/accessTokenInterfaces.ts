@@ -10,6 +10,7 @@ export interface IResponseShopeeApiAccessToken {
     error: string;
     message: string;
     shop_id?: number;
+    shop_id_list?: number[];
     refresh_token?: string;
     access_token?: string;
     expire_in?: number;
