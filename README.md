@@ -225,6 +225,24 @@ pnpm prisma:reset-seed
 
 **http://localhost:5000/api/shopee/shop/1234/products/full-info?item_id_list=892607435,885174198,875174199**
 
+### Pedidos
+
+| Método | Endpoint                           | Descrição             |
+| ------ | ---------------------------------- | --------------------- |
+| GET    | `/api/shopee/shop/:shop_id/orders` | Obter IDs dos pedidos |
+
+#### \* Parâmetros da rota Pedidos -> `GET /api/shopee/shop/:shop_id/orders`:
+
+-   `shop_id`: Parâmetro de rota. ID da loja que deseja consultar.
+-   `page_size`: Parâmetro de consulta. Tamanho da página. Se não for passado valor, a api shopturbo vai usar o valor padrão: 10 (dez). Valor máximo é 100 (cem).
+-   `interval_days`: Parâmetro de consulta. Intervalo de dias a ser considerado. Valor máximo é 15 (quinze).
+-   `time_range_field`Parâmetro de consulta. Campo de tempo usado no filtro. Deve ser uma das seguintes opções -> "create_time" ou "update_time".
+-   `order_status`: Parâmetro de consulta. Status dos pedidos. Deve ser uma das seguintes opções -> "UNPAID", "READY_TO_SHIP", "PROCESSED", "SHIPPED", "COMPLETED", "IN_CANCEL", "CANCELLED", "INVOICE_PENDING".
+
+#### Exemplo de requisição para rota Pedidos `GET /api/shopee/shop/:shop_id/orders`:
+
+**http://localhost:5000/api/shopee/shop/1234/orders?page_size=100&interval_days=15&time_range_field=create_time&order_status=READY_TO_SHIP**
+
 ## 🔁 Fluxo da aplicação
 
 1. Execute o comando `pnpm prisma:seed` para registrar no banco de dados um usuário.
