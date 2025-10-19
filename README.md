@@ -1,13 +1,13 @@
-# ShopTurbo-server
+# ShopTurbo-server API
 
-Um servidor backend Node.js para integração com a API oficial da Shopee, fornecendo autenticação, gerenciamento de lojas e produtos.
+Uma API para integração com a API oficial da Shopee, fornecendo autenticação, gerenciamento de lojas, vendas, produtos e muito mais.
 
 ## 📋 Descrição
 
 O ShopTurbo Server é uma API REST construída em TypeScript que facilita a integração com a API oficial da Shopee. Ele oferece funcionalidades para:
 
--   Gerenciamento de lojas na Shopee (editar, consultar vendas, pedidos, frete, etc...)
--   Gerenciamento de produtos da sua loja na Shopee (editar, postar na loja, consultar lucros, remover da loja, etc...)
+-   Gerenciamento de lojas na Shopee (editar, consultar vendas, pedidos, frete, impostos da Shopee, enfim, ter controle da sua loja na Shopee).
+-   Gerenciamento de produtos da sua loja na Shopee (editar, postar na loja, consultar lucros, impostos, remover da loja e muito mais).
 -   Autenticação de usuários
 -   Integração com Shopee Partner API
 -   Gerenciamento de tokens de acesso
@@ -78,13 +78,15 @@ NODE_ENV=development
 FRONTEND_URL=http://localhost:3000
 
 # JWT
-JWT_SECRET='seuSegredoJWT'
+JWT_SECRET=your-JWT-secret
 
 # Shopee API
 PARTNER_ID=your-partner-id
 PARTNER_KEY=your-partner-key
 
-REDIRECT_URL=your-redirect-url
+REDIRECT_URL=your-frontend-url-callback
+
+AUTH_PARTNER_HOST=https://openplatform.sandbox.test-stable.shopee.sg
 
 AUTHORIZATION_URL_PATH=/api/v2/shop/auth_partner
 GET_ACCESS_TOKEN_PATH=/api/v2/auth/token/get
@@ -92,7 +94,8 @@ GET_REFRESH_TOKEN_PATH=/api/v2/auth/access_token/get
 GET_SHOP_PROFILE_PATH=/api/v2/shop/get_profile
 GET_ITEM_BASE_INFO_PATH=/api/v2/product/get_item_base_info
 GET_ITEM_LIST_PATH=/api/v2/product/get_item_list
-AUTH_PARTNER_HOST=https://partner.shopeemobile.com
+GET_ORDER_LIST_PATH=/api/v2/order/get_order_list
+GET_ORDER_DETAIL_PATH=/api/v2/order/get_order_detail
 ```
 
 ### Banco de Dados
@@ -100,7 +103,7 @@ AUTH_PARTNER_HOST=https://partner.shopeemobile.com
 1. Inicie o PostgreSQL com Docker:
 
 ```bash
-docker-compose up -d postgres
+docker compose up -d
 ```
 
 2. Execute as migrações:
@@ -161,7 +164,7 @@ pnpm prisma:seed
 
 4. Use essas credenciais para fazer login na aplicação.
 
-5. Caso queira desfazer o seed, basta executar:
+5. Caso queira desfazer o seed (apagar o registro do usuário criado pelo seed), basta executar:
 
 ```bash
 pnpm prisma:reset-seed
@@ -200,10 +203,9 @@ pnpm prisma:reset-seed
 
 ### Produtos
 
-| Método | Endpoint                                       | Descrição                      |
-| ------ | ---------------------------------------------- | ------------------------------ |
-| GET    | `/api/shopee/shop/:shop_id/products/id-list`   | Obter IDs dos produtos         |
-| GET    | `/api/shopee/shop/:shop_id/products/full-info` | Obter informações dos produtos |
+| Método | Endpoint                                     | Descrição              |
+| ------ | -------------------------------------------- | ---------------------- |
+| GET    | `/api/shopee/shop/:shop_id/products/id-list` | Obter IDs dos produtos |
 
 #### \* Parâmetros da rota Produtos -> `GET /api/shopee/shop/:shop_id/products/id-list`:
 
@@ -216,6 +218,10 @@ pnpm prisma:reset-seed
 
 **http://localhost:5000/api/shopee/shop/1234/products/id-list?offset=0&page_size=100&item_status=NORMAL**
 
+| Método | Endpoint                                       | Descrição                      |
+| ------ | ---------------------------------------------- | ------------------------------ |
+| GET    | `/api/shopee/shop/:shop_id/products/full-info` | Obter informações dos produtos |
+
 #### \* Parâmetros da rota Produtos -> `GET /api/shopee/shop/:shop_id/products/full-info`:
 
 -   `shop_id`: Parâmetro de rota. ID da loja que deseja consultar.
@@ -227,11 +233,11 @@ pnpm prisma:reset-seed
 
 ### Pedidos
 
-| Método | Endpoint                           | Descrição             |
-| ------ | ---------------------------------- | --------------------- |
-| GET    | `/api/shopee/shop/:shop_id/orders` | Obter IDs dos pedidos |
+| Método | Endpoint                                   | Descrição             |
+| ------ | ------------------------------------------ | --------------------- |
+| GET    | `/api/shopee/shop/:shop_id/orders/id-list` | Obter IDs dos pedidos |
 
-#### \* Parâmetros da rota Pedidos -> `GET /api/shopee/shop/:shop_id/orders`:
+#### \* Parâmetros da rota Pedidos -> `GET /api/shopee/shop/:shop_id/orders/id-list`:
 
 -   `shop_id`: Parâmetro de rota. ID da loja que deseja consultar.
 -   `page_size`: Parâmetro de consulta. Tamanho da página. Se não for passado valor, a api shopturbo vai usar o valor padrão: 10 (dez). Valor máximo é 100 (cem).
@@ -239,9 +245,22 @@ pnpm prisma:reset-seed
 -   `time_range_field`Parâmetro de consulta. Campo de tempo usado no filtro. Deve ser uma das seguintes opções -> "create_time" ou "update_time".
 -   `order_status`: Parâmetro de consulta. Status dos pedidos. Deve ser uma das seguintes opções -> "UNPAID", "READY_TO_SHIP", "PROCESSED", "SHIPPED", "COMPLETED", "IN_CANCEL", "CANCELLED", "INVOICE_PENDING".
 
-#### Exemplo de requisição para rota Pedidos `GET /api/shopee/shop/:shop_id/orders`:
+#### Exemplo de requisição para rota Pedidos `GET /api/shopee/shop/:shop_id/orders/id-list`:
 
 **http://localhost:5000/api/shopee/shop/1234/orders?page_size=100&interval_days=15&time_range_field=create_time&order_status=READY_TO_SHIP**
+
+| Método | Endpoint                                   | Descrição                  |
+| ------ | ------------------------------------------ | -------------------------- |
+| GET    | `/api/shopee/shop/:shop_id/orders/details` | Obter detalhes dos pedidos |
+
+#### \* Parâmetros da rota Pedidos -> `GET /api/shopee/shop/:shop_id/orders/details`:
+
+-   `shop_id`: Parâmetro de rota. ID da loja que deseja consultar.
+-   `order_id_list`: Parâmetro de consulta. Pode ser uma string com o ID(order_sn) de um único pedido específico ou um array de strings com os IDs(order_sn) dos pedidos que deseja consultar (Máximo 50 IDs por requisição).
+
+#### Exemplo de requisição para rota Pedidos `GET /api/shopee/shop/:shop_id/orders/details`:
+
+**http://localhost:5000/api/shopee/shop/1234/orders/details?order_id_list=251018D2REYNQ8,251018D2KT6VN9,251018D2K2BSPG,251018D2HSBTPU**
 
 ## 🔁 Fluxo da aplicação
 
@@ -272,12 +291,13 @@ src/
 │   ├── accessToken/      # Gerenciamento de tokens
 │   ├── authorizationUrl/ # URLs de autorização
 │   ├── docs/             # Documentação
+│   ├── orders/           # Pedidos (vendas)
 │   ├── products/         # Produtos
 │   ├── shop/            # Lojas
 │   ├── shopeePartner/   # Integração Shopee
 │   └── user/            # Usuários
 ├── infra/               # Infraestrutura
-│   ├── authentication/ # Autenticação
+│   ├── authentication/  # Autenticação
 │   ├── authorization/   # Autorização
 │   ├── db/             # Conexão com banco
 │   ├── integrations/   # Integrações externas
