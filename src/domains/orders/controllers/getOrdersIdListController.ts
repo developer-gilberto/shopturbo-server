@@ -1,10 +1,10 @@
-import axios, { AxiosResponse } from "axios";
-import { Response } from "express";
-import { generateSignature } from "../../../infra/integrations/shopee/auth/generateSignature";
-import { ExtendedReqOrder } from "../interfaces/getOrdersIdListInterfaces";
-import { getOrdersIdListSchema } from "../schemas/getOrdersIdListSchema";
-import { getValidAccessToken } from "../../accessToken/services";
-import { getTimeRange } from "../services/getTimeRanger";
+import axios, { AxiosResponse } from 'axios';
+import { Response } from 'express';
+import { generateSignature } from '../../../infra/integrations/shopee/auth/generateSignature';
+import { ExtendedReqOrder } from '../interfaces/getOrdersIdListInterfaces';
+import { ordersIdListSchema } from '../schemas/ordersIdListSchema';
+import { getValidAccessToken } from '../../accessToken/services';
+import { getTimeRange } from '../services/getTimeRanger';
 
 export async function getOrdersIdList(req: ExtendedReqOrder, res: Response) {
     try {
@@ -16,7 +16,7 @@ export async function getOrdersIdList(req: ExtendedReqOrder, res: Response) {
             order_status,
         } = req.query;
 
-        const safeData = getOrdersIdListSchema().safeParse({
+        const safeData = ordersIdListSchema().safeParse({
             shopId: Number(shop_id),
             intervalDays: Number(interval_days),
             pageSize: Number(page_size),
@@ -38,7 +38,7 @@ export async function getOrdersIdList(req: ExtendedReqOrder, res: Response) {
             res.status(500).json({
                 error: true,
                 message:
-                    "An error occurred while trying to get the validToken.",
+                    'An error occurred while trying to get the validToken.',
             });
             return;
         }
@@ -70,7 +70,7 @@ export async function getOrdersIdList(req: ExtendedReqOrder, res: Response) {
             page_size: safeData.data.pageSize,
             time_range_field: safeData.data.timeRangefield,
             order_status: safeData.data.orderStatus,
-            response_optional_fields: "order_status",
+            response_optional_fields: 'order_status',
         };
 
         const encodeUrl = encodeURI(url);
@@ -89,8 +89,8 @@ export async function getOrdersIdList(req: ExtendedReqOrder, res: Response) {
                 const httpStatusCode = err.response?.status || 500;
 
                 console.error(
-                    "\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to get_order_list: \x1b[0m\n",
-                    err,
+                    '\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to get_order_list: \x1b[0m\n',
+                    err
                 );
 
                 res.status(httpStatusCode).json({
@@ -106,13 +106,13 @@ export async function getOrdersIdList(req: ExtendedReqOrder, res: Response) {
         };
 
         console.error(
-            "\x1b[1m\x1b[31m[ ERROR ] An unexpected error occurred while trying to get_order_list: \x1b[0m\n",
-            error,
+            '\x1b[1m\x1b[31m[ ERROR ] An unexpected error occurred while trying to get_order_list: \x1b[0m\n',
+            error
         );
 
         res.status(500).json({
             error: true,
-            message: "An error occurred while trying to get_order_list :(",
+            message: 'An error occurred while trying to get_order_list :(',
         });
     }
 }

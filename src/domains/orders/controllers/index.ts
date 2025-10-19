@@ -1,1 +1,2 @@
-export * from "./getOrdersIdListController";
+export * from './getOrdersIdListController';
+export * from './getOrdersDetailsController';
