@@ -45,25 +45,25 @@ router.get(
 );
 
 router.get(
-    '/api/shopee/shop/:shop_id/products/full-info', // + ?item_id_list=892607435,885174198
+    '/api/shopee/shop/:shop_id/products/full-info',
     verifyJWT,
     productController.getProductsInfo
 );
 
 router.get(
-    '/api/shopee/shop/:shop_id/products/id-list', // + ?offset=0&page_size=100&item_status=NORMAL
+    '/api/shopee/shop/:shop_id/products/id-list',
     verifyJWT,
     productController.getProductsIdList
 );
 
 router.get(
-    '/api/shopee/shop/:shop_id/orders/id-list', // + ?&page_size=100&interval_days=15&time_range_field=create_time&order_status=READY_TO_SHIP
+    '/api/shopee/shop/:shop_id/orders/id-list',
     verifyJWT,
     orderController.getOrdersIdList
 );
 
 router.get(
-    '/api/shopee/shop/:shop_id/orders/details', // + ?&page_size=100&interval_days=15&time_range_field=create_time&order_status=READY_TO_SHIP
+    '/api/shopee/shop/:shop_id/orders/details',
     verifyJWT,
     orderController.getOrdersDetails
 );
