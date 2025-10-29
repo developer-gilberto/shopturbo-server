@@ -1,9 +1,9 @@
-import axios, { AxiosResponse } from "axios";
-import { Response } from "express";
-import { generateSignature } from "../../../infra/integrations/shopee/auth/generateSignature";
-import { ExtendedReq } from "../interfaces/productsInterfaces";
-import { getProductInfoSchema } from "../schemas/getProductInfoSchema";
-import { getValidAccessToken } from "../../accessToken/services/getValidAccessToken";
+import axios, { AxiosResponse } from 'axios';
+import { Response } from 'express';
+import { generateSignature } from '../../../infra/integrations/shopee/auth/generateSignature';
+import { ExtendedReq } from '../interfaces/productsInterfaces';
+import { getProductInfoSchema } from '../schemas/getProductInfoSchema';
+import { getValidAccessToken } from '../../accessToken/services/getValidAccessToken';
 
 export async function getProductsInfo(req: ExtendedReq, res: Response) {
     try {
@@ -26,7 +26,7 @@ export async function getProductsInfo(req: ExtendedReq, res: Response) {
             res.status(500).json({
                 error: true,
                 message:
-                    "An error occurred while trying to get the validToken.",
+                    'An error occurred while trying to get the validToken.',
             });
             return;
         }
@@ -70,7 +70,7 @@ export async function getProductsInfo(req: ExtendedReq, res: Response) {
                 };
 
                 console.error(
-                    "\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to get_item_base_info: \x1b[0m\n",
+                    '\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to get_item_base_info: \x1b[0m\n',
                     error,
                 );
 
@@ -88,13 +88,13 @@ export async function getProductsInfo(req: ExtendedReq, res: Response) {
         };
 
         console.error(
-            "\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to get_item_base_info: \x1b[0m\n",
+            '\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to get_item_base_info: \x1b[0m\n',
             error,
         );
 
         res.status(500).json({
             error: true,
-            message: "An error occurred while trying to get_item_base_info :(",
+            message: 'An error occurred while trying to get_item_base_info :(',
         });
         return;
     }

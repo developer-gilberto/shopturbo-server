@@ -36,7 +36,7 @@ export async function getShopProfile(
         }
 
         const partnerId = Number(process.env.PARTNER_ID!);
-        const path = process.env.GET_SHOP_PROFILE_PATH!;
+        const path = process.env.GET_SHOP_INFO_PATH!;
         const timestamp = Math.floor(Date.now() / 1000);
         const accessToken = validTokenData.data!.accessToken;
         const shopId = Number(shop_id);
@@ -56,7 +56,7 @@ export async function getShopProfile(
             .then((response: AxiosResponse<IResponseGetShopProfile>) => {
                 res.status(200).json({
                     error: false,
-                    data: response.data.response,
+                    data: response.data,
                 });
                 return;
             })
