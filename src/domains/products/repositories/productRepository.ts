@@ -1,0 +1,42 @@
+import { prismaClient } from '../../../infra/db/dbConnection';
+import { IExtendedProduct } from '../interfaces/productsInterfaces';
+
+export class ProductRepository {
+    async saveOrUpdate(
+        productsData: IExtendedProduct[],
+    ): Promise<{ error: boolean; data: any | null }> {
+        try {
+            const result = await Promise.all(
+                productsData.map((product) =>
+                    prismaClient.product.upsert({
+                        where: { id: product.id },
+                        update: {
+                            costPrice: product.costPrice,
+                            governmentTaxes: product.governmentTaxes,
+                        },
+                        create: {
+                            shopId: product.shopId,
+                            id: product.id,
+                            sku: product.sku,
+                            categoryId: product.categoryId,
+                            name: product.name,
+                            stock: product.stock,
+                            sellingPrice: product.sellingPrice,
+                            costPrice: product.costPrice,
+                            governmentTaxes: product.governmentTaxes,
+                            imageUrl: product.imageUrl,
+                        },
+                    }),
+                ),
+            );
+
+            return { error: false, data: result };
+        } catch (err) {
+            console.error(
+                `\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to save the products to the database: \x1b[0m\n`,
+                err,
+            );
+            return { error: true, data: null };
+        }
+    }
+}
