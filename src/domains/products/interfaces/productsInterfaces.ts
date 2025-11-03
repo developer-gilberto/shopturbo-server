@@ -25,3 +25,9 @@ export interface IProduct {
 export interface IExtendedProduct extends IProduct {
     shopId: number;
 }
+
+export interface IProductsPagination {
+    nextOffset: number | null;
+    hasNextOffset: boolean;
+    totalProducts: number;
+}

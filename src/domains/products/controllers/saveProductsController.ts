@@ -33,21 +33,34 @@ export async function saveProducts(req: Request, res: Response) {
 
     const productRepo = new ProductRepository();
 
-    const result = await productRepo.saveOrUpdate(productsAndShopId);
+    try {
+        const result = await productRepo.saveOrUpdate(productsAndShopId);
 
-    if (result.error) {
+        if (result.error) {
+            res.status(500).json({
+                error: true,
+                message:
+                    'An error occurred while trying to save the products to the database.',
+                data: null,
+            });
+            return;
+        }
+
+        res.status(201).json({
+            error: false,
+            message: 'Products successfully saved to the database.',
+            data: result.data,
+        });
+    } catch (err) {
+        console.error(
+            `\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to save the products to the database: \x1b[0m\n`,
+            err,
+        );
         res.status(500).json({
             error: true,
             message:
                 'An error occurred while trying to save the products to the database.',
             data: null,
         });
-        return;
     }
-
-    res.status(201).json({
-        error: false,
-        message: 'Products successfully saved to the database.',
-        data: null,
-    });
 }

@@ -63,6 +63,12 @@ router.post(
 );
 
 router.get(
+    '/api/shop/:shop_id/products',
+    verifyJWT,
+    productController.getProducts,
+);
+
+router.get(
     '/api/shopee/shop/:shop_id/orders/id-list',
     verifyJWT,
     orderController.getOrdersIdList,
