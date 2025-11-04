@@ -4,9 +4,7 @@ import { type Product as TProduct } from '@prisma/client';
 import { IProductsPagination } from '../interfaces/productsInterfaces';
 
 export class ProductRepository {
-    async saveOrUpdate(
-        productsData: IExtendedProduct[],
-    ): Promise<{ error: boolean; data: TProduct[] | null }> {
+    async saveOrUpdate(productsData: IExtendedProduct[]): Promise<{ error: boolean; data: TProduct[] | null }> {
         try {
             const result = await Promise.all(
                 productsData.map((product) =>
@@ -34,10 +32,7 @@ export class ProductRepository {
 
             return { error: false, data: result };
         } catch (err) {
-            console.error(
-                `\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to save the products to the database: \x1b[0m\n`,
-                err,
-            );
+            console.error(`\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to save the products to the database: \x1b[0m\n`, err);
             return { error: true, data: null };
         }
     }
@@ -64,22 +59,19 @@ export class ProductRepository {
             ]);
 
             const nextOffset = offset + pagesize;
-            const hasNextOffset = nextOffset < totalProducts;
+            const hasNextPage = nextOffset < totalProducts;
 
             return {
                 error: false,
                 data: users,
                 pagination: {
-                    nextOffset: hasNextOffset ? nextOffset : null,
-                    hasNextOffset,
+                    nextOffset: hasNextPage ? nextOffset : null,
+                    hasNextPage,
                     totalProducts,
                 },
             };
         } catch (err) {
-            console.error(
-                `\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to retrieve product data from getProducts(): \x1b[0m\n`,
-                err,
-            );
+            console.error(`\x1b[1m\x1b[31m[ ERROR ] An error occurred while trying to retrieve product data from getProducts(): \x1b[0m\n`, err);
             return { error: true, data: null, pagination: null };
         }
     }

@@ -28,6 +28,6 @@ export interface IExtendedProduct extends IProduct {
 
 export interface IProductsPagination {
     nextOffset: number | null;
-    hasNextOffset: boolean;
+    hasNextPage: boolean;
     totalProducts: number;
 }
