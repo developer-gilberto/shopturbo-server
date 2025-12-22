@@ -66,27 +66,20 @@ cp .env.example .env
 Edite o arquivo `.env` com suas configurações:
 
 ```env
-# Database
-POSTGRES_USER='postgres'
-POSTGRES_PASSWORD='senha123'
-POSTGRES_DB='db_shopturbo'
-DATABASE_URL='postgresql://postgres:senha123@localhost:5432/db_shopturbo?schema=public'
-
-# Server
+NODE_ENV='development'
+FRONTEND_URL='http://localhost:3000'
 PORT=5000
-NODE_ENV=development
-FRONTEND_URL=http://localhost:3000
+JWT_SECRET='your-jwt-secret'
 
-# JWT
-JWT_SECRET=your-JWT-secret
+POSTGRES_USER='postgres'
+POSTGRES_PASSWORD='password1234'
+POSTGRES_DB='db_shopturbo'
 
-# Shopee API
-PARTNER_ID=your-partner-id
-PARTNER_KEY=your-partner-key
+DATABASE_URL='postgresql://postgres:password1234@localhost:5432/db_shopturbo?schema=public'
 
-REDIRECT_URL=your-frontend-url-callback
-
-AUTH_PARTNER_HOST=https://openplatform.sandbox.test-stable.shopee.sg
+PARTNER_ID=1234
+PARTNER_KEY='your-api-key'
+AUTH_PARTNER_HOST='https://openplatform.sandbox.test-stable.shopee.sg'
 
 AUTHORIZATION_URL_PATH=/api/v2/shop/auth_partner
 GET_ACCESS_TOKEN_PATH=/api/v2/auth/token/get
@@ -96,6 +89,8 @@ GET_ITEM_BASE_INFO_PATH=/api/v2/product/get_item_base_info
 GET_ITEM_LIST_PATH=/api/v2/product/get_item_list
 GET_ORDER_LIST_PATH=/api/v2/order/get_order_list
 GET_ORDER_DETAIL_PATH=/api/v2/order/get_order_detail
+
+REDIRECT_URL='your-frontend-url-callback->http://localhost:3000'
 ```
 
 ### Banco de Dados
@@ -247,7 +242,7 @@ pnpm prisma:reset-seed
 
 #### Exemplo de requisição para rota Pedidos `GET /api/shopee/shop/:shop_id/orders/id-list`:
 
-**http://localhost:5000/api/shopee/shop/1234/orders/id-list?page_size=100&interval_days=15&time_range_field=create_time&order_status=READY_TO_SHIP**
+**http://localhost:5000/api/shopee/shop/1234/orders?page_size=100&interval_days=15&time_range_field=create_time&order_status=READY_TO_SHIP**
 
 | Método | Endpoint                                   | Descrição                  |
 | ------ | ------------------------------------------ | -------------------------- |
