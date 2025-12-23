@@ -242,7 +242,7 @@ pnpm prisma:reset-seed
 
 #### Exemplo de requisição para rota Pedidos `GET /api/shopee/shop/:shop_id/orders/id-list`:
 
-**http://localhost:5000/api/shopee/shop/1234/orders?page_size=100&interval_days=15&time_range_field=create_time&order_status=READY_TO_SHIP**
+**http://localhost:5000/api/shopee/shop/1234/orders/id-list?page_size=100&interval_days=15&time_range_field=create_time&order_status=READY_TO_SHIP**
 
 | Método | Endpoint                                   | Descrição                  |
 | ------ | ------------------------------------------ | -------------------------- |
