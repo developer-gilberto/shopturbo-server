@@ -5,7 +5,7 @@ import { IResponseGetShopProfile } from "../interfaces/shopInterfaces";
 import { getShopInfoSchema } from "../schemas/getShopInfoSchema";
 import { getValidAccessToken } from "../../accessToken/services";
 
-export async function getShopProfile(
+export async function getShopInfo(
   req: Request<{ shop_id: string }>,
   res: Response,
 ) {
@@ -35,7 +35,7 @@ export async function getShopProfile(
     }
 
     const partnerId = Number(process.env.PARTNER_ID!);
-    const path = process.env.GET_SHOP_PROFILE_PATH!;
+    const path = process.env.GET_SHOP_INFO_PATH!;
     const timestamp = Math.floor(Date.now() / 1000);
     const accessToken = validTokenData.data!.accessToken;
     const shopId = Number(shop_id);
