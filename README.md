@@ -1,16 +1,27 @@
 # ShopTurbo-server API
 
-Uma API para integração com a API oficial da Shopee, fornecendo autenticação, gerenciamento de lojas, vendas, produtos e muito mais.
+O ShopTurbo Server é uma API REST construída em TypeScript e Express que facilita a integração com a API oficial da Shopee. Ele oferece funcionalidades para:
 
-## 📋 Descrição
-
-O ShopTurbo Server é uma API REST construída em TypeScript que facilita a integração com a API oficial da Shopee. Ele oferece funcionalidades para:
-
--   Gerenciamento de lojas na Shopee (editar, consultar vendas, pedidos, frete, impostos da Shopee, enfim, ter controle da sua loja na Shopee).
+-   Gerenciamento de lojas na Shopee (editar, consultar vendas, pedidos, frete, tarifas da Shopee, enfim, ter controle da sua loja na Shopee).
 -   Gerenciamento de produtos da sua loja na Shopee (editar, postar na loja, consultar lucros, impostos, remover da loja e muito mais).
 -   Autenticação de usuários
 -   Integração com Shopee Partner API
 -   Gerenciamento de tokens de acesso
+
+## ⚠️ Antes de continuar
+
+Este projeto ainda está em desenvolvimento, se você encontrar algum problema,  comportamento inesperado, bugs, você pode ajudar muito no desenvolvimento do projeto simplesmente reportando o problema ao desenvolvedor:
+
+Ao reportar, inclua:
+
+-   Passos para reproduzir o bug
+-   O que você esperava que acontecesse
+-   O que realmente aconteceu
+-   Logs ou prints se possível
+
+👉 [Reportar bug ao desenvolvedor](https://github.com/developer-gilberto/shopturbo-server/issues/new)
+
+Saiba mais sobre o desenvolvedor no final dessa documentação.
 
 ## 🚀 Tecnologias
 
@@ -40,7 +51,7 @@ O ShopTurbo Server é uma API REST construída em TypeScript que facilita a inte
 
 -   Node.js 22+
 -   pnpm ou gerenciador de pacotes de sua preferência
--   PostgreSQL ou Docker
+-   PostgreSQL ou Docker(recomendado)
 
 ### Configuração do Ambiente
 
@@ -85,6 +96,7 @@ AUTHORIZATION_URL_PATH=/api/v2/shop/auth_partner
 GET_ACCESS_TOKEN_PATH=/api/v2/auth/token/get
 GET_REFRESH_TOKEN_PATH=/api/v2/auth/access_token/get
 GET_SHOP_PROFILE_PATH=/api/v2/shop/get_profile
+GET_SHOP_INFO_PATH=/api/v2/shop/get_shop_info
 GET_ITEM_BASE_INFO_PATH=/api/v2/product/get_item_base_info
 GET_ITEM_LIST_PATH=/api/v2/product/get_item_list
 GET_ORDER_LIST_PATH=/api/v2/order/get_order_list
@@ -173,6 +185,8 @@ pnpm prisma:reset-seed
 | ------ | -------- | ----------------------------- |
 | GET    | `/docs`  | Documentação da API ShopTurbo |
 
+##
+
 ### Autenticação
 
 | Método | Endpoint   | Descrição                           |
@@ -182,7 +196,9 @@ pnpm prisma:reset-seed
 | POST   | `/signout` | Logout do usuário                   |
 | GET    | `/ping`    | Verificar autenticação (requer JWT) |
 
-### Shopee Integration
+##
+
+### Shopee
 
 | Método | Endpoint                   | Descrição                 |
 | ------ | -------------------------- | ------------------------- |
@@ -190,49 +206,124 @@ pnpm prisma:reset-seed
 | GET    | `/api/shopee/access-token` | Obter token de acesso     |
 | PATCH  | `/api/shopee/access-token` | Atualizar token de acesso |
 
-### Shop (Loja)
+#### Exemplo de requisição para rota `PATCH /api/shopee/access-token`:
+Corpo da requisição deve conter um objeto no formato JSON com as seguintes propriedades: `shopId` e `refreshToken` ambas do tipo string.
+
+**http://localhost:5000/api/shopee/access-token**
+
+`body (json)`:
+```
+{
+	"shopId": "1234",
+	"refreshToken": "jwt"
+}
+```
+
+##
+
+### Shop
 
 | Método | Endpoint                            | Descrição                     |
 | ------ | ----------------------------------- | ----------------------------- |
 | GET    | `/api/shopee/shop/profile/:shop_id` | Obter dados do perfil da loja |
+| GET    | `/api/shopee/shop/info/:shop_id`    | Obter informações da loja     |
 
-### Produtos
+Os parâmetros da rota GET /api/shopee/shop/profile/:shop_id e GET /api/shopee/shop/info/:shop_id são os mesmos e a requisição é feita da mesma maneira também.
 
-| Método | Endpoint                                     | Descrição              |
-| ------ | -------------------------------------------- | ---------------------- |
-| GET    | `/api/shopee/shop/:shop_id/products/id-list` | Obter IDs dos produtos |
+#### \* Parâmetros da rota -> `GET /api/shopee/shop/profile/:shop_id`:
 
-#### \* Parâmetros da rota Produtos -> `GET /api/shopee/shop/:shop_id/products/id-list`:
+-   `shop_id`: Parâmetro de rota. ID da loja que deseja consultar.
+
+#### Exemplo de requisição para rota `GET /api/shopee/shop/profile/:shop_id`:
+
+**http://localhost:5000/api/shopee/shop/profile/1234**
+
+##
+
+### Produtos na Shopee
+
+| Método | Endpoint                                     | Descrição                               |
+| ------ | -------------------------------------------- | --------------------------------------- |
+| GET    | `/api/shopee/shop/:shop_id/products/id-list` | Obter IDs dos produtos                  |
+| GET    | `/api/shopee/shop/:shop_id/products/full-info` | Obter informações dos produtos |
+
+#### \* Parâmetros da rota -> `GET /api/shopee/shop/:shop_id/products/id-list`:
 
 -   `shop_id`: Parâmetro de rota. ID da loja que deseja consultar.
 -   `offset`: Parâmetro de consulta. Offset para paginação. Se não for passado valor, a api shopturbo vai usar o valor padrão: 0 (zero).
 -   `page_size`: Parâmetro de consulta. Tamanho da página. Se não for passado valor, a api shopturbo vai usar o valor padrão: 10 (dez). Valor máximo é 100 (cem).
 -   `item_status`: Parâmetro de consulta. Status do produto. Deve ser uma das seguintes opções -> "NORMAL", "BANNED", "UNLIST", "REVIEWING", "SELLER_DELETE", "SHOPEE_DELETE".
 
-#### Exemplo de requisição para rota Produtos `GET /api/shopee/shop/:shop_id/products/id-list`:
+#### Exemplo de requisição para rota `GET /api/shopee/shop/:shop_id/products/id-list`:
 
 **http://localhost:5000/api/shopee/shop/1234/products/id-list?offset=0&page_size=100&item_status=NORMAL**
 
-| Método | Endpoint                                       | Descrição                      |
-| ------ | ---------------------------------------------- | ------------------------------ |
-| GET    | `/api/shopee/shop/:shop_id/products/full-info` | Obter informações dos produtos |
 
-#### \* Parâmetros da rota Produtos -> `GET /api/shopee/shop/:shop_id/products/full-info`:
+#### \* Parâmetros da rota -> `GET /api/shopee/shop/:shop_id/products/full-info`:
 
 -   `shop_id`: Parâmetro de rota. ID da loja que deseja consultar.
 -   `item_id_list`: Parâmetro de consulta. Pode ser o ID de um único produto específico ou um array com o ID dos produtos que deseja consultar (Máximo 50 IDs por requisição).
 
-#### Exemplo de requisição para rota Produtos `GET /api/shopee/shop/:shop_id/products/full-info`:
+#### Exemplo de requisição para rota `GET /api/shopee/shop/:shop_id/products/full-info`:
 
 **http://localhost:5000/api/shopee/shop/1234/products/full-info?item_id_list=892607435,885174198,875174199**
+
+##
+
+### Produtos no ShopTurbo
+
+| Método | Endpoint                                     | Descrição                               |
+| ------ | -------------------------------------------- | --------------------------------------- |
+| POST   | `/api/shop/:shop_id/products`                | Salvar produtos no banco de dados |
+| GET    | `/api/shop/:shop_id/products`                | Obter produtos do banco de dados  |
+
+
+#### \* Parâmetros da rota -> `POST /api/shop/:shop_id/products`:
+
+-   `shop_id`: Parâmetro de rota. ID da loja que deseja salvar os produtos.
+-   `body`: Corpo da requisição com um array de objetos no formato JSON. (máximo 100 produtos por requisição). Onde cada objeto representa um produto.
+
+#### Exemplo de requisição para rota `POST /api/shop/:shop_id/products`:
+
+**http://localhost:5000/api/shop/1234/products**
+
+`body (json)`:
+```
+[
+    {
+        "id": 892607435,
+        "sku": "prod-001",
+        "categoryId": 100,
+        "name": "Produto Exemplo",
+        "stock": 50,
+        "sellingPrice": 99.90,
+        "costPrice": 50.00,
+        "governmentTaxes": 15.00,
+        "imageUrl": "https://example.com/image.jpg"
+    }
+]
+```
+
+#### \* Parâmetros da rota -> `GET /api/shop/:shop_id/products`:
+
+-   `shop_id`: Parâmetro de rota. ID da loja que deseja consultar.
+-   `offset`: Parâmetro de consulta. Offset para paginação
+-   `page_size`: Parâmetro de consulta. Tamanho da página (número inteiro entre 1 e 100).
+
+#### Exemplo de requisição para rota `GET /api/shop/:shop_id/products`:
+
+**http://localhost:5000/api/shop/1234/products?offset=0&page_size=50**
+
+##
 
 ### Pedidos
 
 | Método | Endpoint                                   | Descrição             |
 | ------ | ------------------------------------------ | --------------------- |
 | GET    | `/api/shopee/shop/:shop_id/orders/id-list` | Obter IDs dos pedidos |
+| GET    | `/api/shopee/shop/:shop_id/orders/details` | Obter detalhes dos pedidos |
 
-#### \* Parâmetros da rota Pedidos -> `GET /api/shopee/shop/:shop_id/orders/id-list`:
+#### \* Parâmetros da rota -> `GET /api/shopee/shop/:shop_id/orders/id-list`:
 
 -   `shop_id`: Parâmetro de rota. ID da loja que deseja consultar.
 -   `page_size`: Parâmetro de consulta. Tamanho da página. Se não for passado valor, a api shopturbo vai usar o valor padrão: 10 (dez). Valor máximo é 100 (cem).
@@ -240,22 +331,20 @@ pnpm prisma:reset-seed
 -   `time_range_field`Parâmetro de consulta. Campo de tempo usado no filtro. Deve ser uma das seguintes opções -> "create_time" ou "update_time".
 -   `order_status`: Parâmetro de consulta. Status dos pedidos. Deve ser uma das seguintes opções -> "UNPAID", "READY_TO_SHIP", "PROCESSED", "SHIPPED", "COMPLETED", "IN_CANCEL", "CANCELLED", "INVOICE_PENDING".
 
-#### Exemplo de requisição para rota Pedidos `GET /api/shopee/shop/:shop_id/orders/id-list`:
+#### Exemplo de requisição para rota `GET /api/shopee/shop/:shop_id/orders/id-list`:
 
 **http://localhost:5000/api/shopee/shop/1234/orders/id-list?page_size=100&interval_days=15&time_range_field=create_time&order_status=READY_TO_SHIP**
 
-| Método | Endpoint                                   | Descrição                  |
-| ------ | ------------------------------------------ | -------------------------- |
-| GET    | `/api/shopee/shop/:shop_id/orders/details` | Obter detalhes dos pedidos |
-
-#### \* Parâmetros da rota Pedidos -> `GET /api/shopee/shop/:shop_id/orders/details`:
+#### \* Parâmetros da rota -> `GET /api/shopee/shop/:shop_id/orders/details`:
 
 -   `shop_id`: Parâmetro de rota. ID da loja que deseja consultar.
 -   `order_id_list`: Parâmetro de consulta. Pode ser uma string com o ID(order_sn) de um único pedido específico ou um array de strings com os IDs(order_sn) dos pedidos que deseja consultar (Máximo 50 IDs por requisição).
 
-#### Exemplo de requisição para rota Pedidos `GET /api/shopee/shop/:shop_id/orders/details`:
+#### Exemplo de requisição para rota `GET /api/shopee/shop/:shop_id/orders/details`:
 
 **http://localhost:5000/api/shopee/shop/1234/orders/details?order_id_list=251018D2REYNQ8,251018D2KT6VN9,251018D2K2BSPG,251018D2HSBTPU**
+
+
 
 ## 🔁 Fluxo da aplicação
 
@@ -285,8 +374,8 @@ src/
 ├── domains/              # Lógica de negócio por domínio
 │   ├── accessToken/      # Gerenciamento de tokens
 │   ├── authorizationUrl/ # URLs de autorização
-│   ├── docs/             # Documentação
-│   ├── orders/           # Pedidos (vendas)
+│   ├── docs/             # Documentação do projeto
+│   ├── orders/           # Pedidos
 │   ├── products/         # Produtos
 │   ├── shop/            # Lojas
 │   ├── shopeePartner/   # Integração Shopee
@@ -360,13 +449,13 @@ O sistema utiliza JWT (JSON Web Tokens) para autenticação:
 O projeto inclui configuração Docker. Suba o banco com o comando:
 
 ```bash
-docker-compose up
+docker compose up
 ```
 
 ## 🚦 HTTP Status Codes
 
 -   `200`: Sucesso
--   `200`: Recurso criado
+-   `201`: Recurso criado
 -   `400`: Dados inválidos
 -   `401`: Não autorizado
 -   `403`: Acesso negado
@@ -396,3 +485,4 @@ Feito com muito ❤️ por **Gilberto Lopes** Full Stack Developer.
 -   [gilbertolopes.dev](https://gilbertolopes.dev)
 -   [GitHub](https://github.com/developer-gilberto)
 -   [Instagran](https://www.instagram.com/developer.gilberto/)
+-   Email: developer.gilberto@gmail.com

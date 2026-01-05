@@ -13,7 +13,11 @@ const router = Router();
 router.get("/docs", docsController);
 
 router.get("/", (_req, res: Response) => {
-  res.status(200).json({ message: "Hello world!" });
+  res.status(200).json({
+    success: true,
+    message:
+      "The project documentation is available at GET https://shopturbo-api.gilbertolopes.dev/docs",
+  });
 });
 
 router.get("/ping", verifyJWT, (_req, res: Response) => {
