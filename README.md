@@ -8,6 +8,16 @@ O ShopTurbo Server é uma API REST construída em TypeScript e Express que facil
 -   Integração com Shopee Partner API
 -   Gerenciamento de tokens de acesso
 
+## Exemplo de resposta rota `GET /api/shop/shop_id/products`
+<img width="762" height="822" alt="get" src="https://github.com/user-attachments/assets/7f8c67c6-3741-4055-aab2-48c7a1f50c7d" />
+
+## Exemplo de resposta rota `POST /api/shop/shop_id/products`
+<img width="761" height="658" alt="post" src="https://github.com/user-attachments/assets/0bb583c7-d5e7-482a-a528-96a6e1da88d2" />
+
+## Exemplo de resposta rota `GET /api/shop/profile/shop_id`
+<img width="765" height="501" alt="get-shop-prof" src="https://github.com/user-attachments/assets/628eddaa-0b45-4fbe-b8df-856f0b73986d" />
+
+
 ## ⚠️ Antes de continuar
 
 Este projeto ainda está em desenvolvimento, se você encontrar algum problema,  comportamento inesperado, bugs, você pode ajudar muito no desenvolvimento do projeto simplesmente reportando o problema ao desenvolvedor:
@@ -482,7 +492,8 @@ Feito com muito ❤️ por **Gilberto Lopes** Full Stack Developer.
 
 ### Saiba mais sobre o desenvolvedor
 
--   [gilbertolopes.dev](https://gilbertolopes.dev)
+-   Email: developer.gilberto@gmail.com
+-   [Site pessoal](https://gilbertolopes.dev)
+-   [LinkedIn](https://linkedin.com/in/gilbertolopes-dev)
 -   [GitHub](https://github.com/developer-gilberto)
 -   [Instagran](https://www.instagram.com/developer.gilberto/)
--   Email: developer.gilberto@gmail.com
