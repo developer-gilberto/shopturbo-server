@@ -1,6 +1,6 @@
 # ShopTurbo-server API
 
-O ShopTurbo Server é uma API REST construída em TypeScript e Express que facilita a integração com a API oficial da Shopee. Ele oferece funcionalidades para:
+Uma API REST para fazer a integração do meu SaaS ShoptTurbo com a API oficial da Shopee.  Desenvolvida usando TypeScript, Node.js, Express, Prisma ORM, Postgres, Docker. Ele oferece funcionalidades para:
 
 -   Gerenciamento de lojas na Shopee (editar, consultar vendas, pedidos, frete, tarifas da Shopee, enfim, ter controle da sua loja na Shopee).
 -   Gerenciamento de produtos da sua loja na Shopee (editar, postar na loja, consultar lucros, impostos, remover da loja e muito mais).
